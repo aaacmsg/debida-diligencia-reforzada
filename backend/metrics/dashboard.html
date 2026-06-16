@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8">
+<title>Dashboard de Metricas - Diligencia Reforzada EDD</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Inter,system-ui,sans-serif;background:#f8fafc;color:#1e293b;padding:2rem;max-width:1100px;margin:auto}
+h1{font-size:1.75rem;border-bottom:3px solid #3b82f6;padding-bottom:0.5rem}
+.subtitle{color:#64748b;margin-bottom:2rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin:1.5rem 0}
+.card{background:#fff;border-radius:12px;padding:1.25rem;box-shadow:0 1px 3px rgba(0,0,0,0.1);border:1px solid #e2e8f0}
+.card h3{font-size:0.7rem;text-transform:uppercase;color:#64748b;margin-bottom:0.25rem}
+.card .value{font-size:1.75rem;font-weight:700}
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.full{grid-column:1/-1}
+table{width:100%;border-collapse:collapse;margin-top:1rem}
+th,td{text-align:left;padding:0.75rem;border-bottom:1px solid #e2e8f0;font-size:0.875rem}
+th{color:#64748b;font-weight:600;font-size:0.75rem;text-transform:uppercase}
+.footer{text-align:center;color:#94a3b8;font-size:0.75rem;margin-top:2rem;padding-top:1rem;border-top:1px solid #e2e8f0}
+</style>
+</head>
+<body>
+<h1>📊 Dashboard de Metricas</h1>
+<p class="subtitle">Diligencia Reforzada EDD — Panama AML/CFT — 2026-06-15 20:58</p>
+
+<div class="grid">
+  <div class="card"><h3>Cobertura</h3><div class="value" style="color:red">26%</div></div>
+  <div class="card"><h3>KLOC Backend</h3><div class="value">2337</div></div>
+  <div class="card"><h3>KLOC Frontend</h3><div class="value">3689</div></div>
+  <div class="card"><h3>Tests</h3><div class="value">63<span style="font-size:0.875rem;color:#64748b"> (63 ok)</span></div></div>
+  <div class="card"><h3>Complejidad Max</h3><div class="value">12</div></div>
+  <div class="card"><h3>Mantenibilidad</h3><div class="value">75</div></div>
+  <div class="card"><h3>Code Smells</h3><div class="value">0</div></div>
+  <div class="card"><h3>Vulnerabilidades</h3><div class="value">0</div></div>
+</div>
+
+<div class="charts">
+  <div class="card chart-card">
+    <h3>Cobertura</h3>
+    <canvas id="covChart" height="200"></canvas>
+  </div>
+  <div class="card chart-card">
+    <h3>Resultados de Pruebas</h3>
+    <canvas id="testChart" height="200"></canvas>
+  </div>
+</div>
+
+<div class="card full">
+<h3>Tabla de Metricas</h3>
+<table>
+<tr><th>Metrica</th><th>Valor</th><th>Herramienta</th><th>Estado</th></tr>
+<tr><td>Cobertura de pruebas</td><td>26.0%</td><td>pytest-cov</td><td><div style="background:#e2e8f0;border-radius:8px;height:24px"><div style="width:26.0%;background:#ef4444;height:24px;border-radius:8px;text-align:center;color:white;font-weight:700;font-size:12px;line-height:24px">26.0</div></div></td></tr>
+<tr><td>Densidad de defectos</td><td>0.0/KLOC</td><td>pytest</td><td><div style="background:#e2e8f0;border-radius:8px;height:24px"><div style="width:100.0%;background:#22c55e;height:24px;border-radius:8px;text-align:center;color:white;font-weight:700;font-size:12px;line-height:24px">100</div></div></td></tr>
+<tr><td>Complejidad ciclomatica (max)</td><td>12</td><td>radon cc</td><td><div style="background:#e2e8f0;border-radius:8px;height:24px"><div style="width:40.0%;background:#ef4444;height:24px;border-radius:8px;text-align:center;color:white;font-weight:700;font-size:12px;line-height:24px">40</div></div></td></tr>
+<tr><td>Funciones totales</td><td>116</td><td>radon cc</td><td>116</td></tr>
+<tr><td>Mantenibilidad (prom)</td><td>74.6</td><td>radon mi</td><td><div style="background:#e2e8f0;border-radius:8px;height:24px"><div style="width:74.6%;background:#22c55e;height:24px;border-radius:8px;text-align:center;color:white;font-weight:700;font-size:12px;line-height:24px">74.6</div></div></td></tr>
+<tr><td>Code smells</td><td>0</td><td>flake8</td><td><div style="background:#e2e8f0;border-radius:8px;height:24px"><div style="width:100.0%;background:#22c55e;height:24px;border-radius:8px;text-align:center;color:white;font-weight:700;font-size:12px;line-height:24px">100</div></div></td></tr>
+<tr><td>Vulnerabilidades</td><td>0</td><td>bandit</td><td>✅ 0</td></tr>
+<tr><td>KLOC total</td><td>6026 (2337 backend + 3689 frontend)</td><td>line count</td><td>Proyecto mediano</td></tr>
+<tr><td>Tests totales</td><td>63 (63 passed, 0 failed)</td><td>pytest</td><td>✅ Pasando</td></tr>
+</table>
+</div>
+
+<div class="footer">
+Generado por generate_metrics_dashboard.py — 2026-06-15 20:58:01
+</div>
+
+<script>
+new Chart(document.getElementById('covChart'), {
+  type: 'doughnut',
+  data: {labels:['Cubierto','No cubierto'], datasets:[{data:[26.0,74.0], backgroundColor:['#22c55e','#e2e8f0']}]}
+});
+new Chart(document.getElementById('testChart'), {
+  type: 'bar',
+  data: {labels:['Passed','Failed'], datasets:[{data:[63,0], backgroundColor:['#22c55e','#ef4444']}]},
+  options: {scales:{y:{beginAtZero:true}}}
+});
+</script>
+</body></html>
