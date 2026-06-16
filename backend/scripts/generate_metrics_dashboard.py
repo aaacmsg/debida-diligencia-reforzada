@@ -15,6 +15,7 @@ Generates: metrics/dashboard.html
 
 import os
 import re
+from datetime import datetime
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -262,7 +263,7 @@ def main():
     html = generate_html(metrics)
     output_path = METRICS_DIR / "dashboard.html"
     METRICS_DIR.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(html)
+    output_path.write_text(html, encoding="utf-8")
     print(f"Dashboard generated: {output_path}")
     for key, value in metrics.items():
         print(f"  {key}: {value}")
