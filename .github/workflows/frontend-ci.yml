@@ -2,11 +2,11 @@ name: Frontend CI
 
 on:
   push:
-    branches: [main, develop]
-    paths: ["frontend/**"]
+    branches: [master]
+    paths: ["frontend/**", ".github/**"]
   pull_request:
-    branches: [main]
-    paths: ["frontend/**"]
+    branches: [master]
+    paths: ["frontend/**", ".github/**"]
 
 jobs:
   build:

@@ -2,11 +2,11 @@ name: Backend CI
 
 on:
   push:
-    branches: [main, develop]
-    paths: ["backend/**"]
+    branches: [master]
+    paths: ["backend/**", ".github/**"]
   pull_request:
-    branches: [main]
-    paths: ["backend/**"]
+    branches: [master]
+    paths: ["backend/**", ".github/**"]
 
 jobs:
   test:
