@@ -1,0 +1,85 @@
+name: Metrics Report
+
+on:
+  schedule:
+    - cron: "0 12 * * 1"
+  workflow_dispatch:
+
+jobs:
+  metrics:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: diligencia_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: KLOC - cloc
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq cloc
+          mkdir -p backend/metrics
+          cloc backend/app frontend/src --by-file --csv --out=backend/metrics/kloc-report.csv
+          cloc backend/app frontend/src --md --out=backend/metrics/kloc-report.md
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Instalar dependencias
+        run: |
+          pip install -r backend/requirements.txt
+          pip install flake8 bandit radon
+
+      - name: LINT - flake8
+        run: flake8 backend/app --max-line-length=120 --format=html --out=backend/metrics/flake8-report.html || true
+
+      - name: SECURITY - bandit
+        run: bandit -r backend/app -f html -o backend/metrics/bandit-report.html || true
+
+      - name: COMPLEXITY - radon cc
+        run: radon cc backend/app -s > backend/metrics/complejidad-ciclomatica.txt
+
+      - name: MAINTAINABILITY - radon mi
+        run: radon mi backend/app -s > backend/metrics/mantenibilidad.txt
+
+      - name: RAW metrics - radon raw
+        run: radon raw backend/app -s > backend/metrics/metricas-raw.txt
+
+      - name: Alembic migrations
+        run: alembic upgrade head
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/diligencia_db
+          SECRET_KEY: ci-secret-key-not-for-production
+
+      - name: Tests + coverage
+        run: pytest --cov=app --cov-report=html:metrics/coverage --cov-report=term --junitxml=metrics/pytest-results.xml -v
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/diligencia_db
+          SECRET_KEY: ci-secret-key-not-for-production
+
+      - name: Generar dashboard de métricas
+        run: python scripts/generate_metrics_dashboard.py
+        working-directory: backend
+
+      - name: Upload metrics artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: weekly-metrics
+          path: backend/metrics/
