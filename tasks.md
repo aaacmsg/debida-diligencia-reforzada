@@ -14,8 +14,8 @@
 
 | Fase | Contenido | Issues | Estado |
 |------|-----------|--------|--------|
-| **A — Datos de demo (seed)** | Script de seed: usuarios por rol, clientes (PEP y no PEP) relacionados entre sí, expedientes, alertas — desbloquea el grafo y la demo del video | bloqueo abierto del daily scrum | 🔴 Siguiente |
-| **B — Seguridad P0** | RBAC en endpoints + rate limiting + auditoría WORM | #89, #90, #91 | 🔴 Pendiente |
+| **A — Datos de demo (seed)** | Script de seed: usuarios por rol, clientes (PEP y no PEP) relacionados entre sí, expedientes, alertas — desbloquea el grafo y la demo del video. Incluye fix de `config.py` (REDIS_URL/ALLOWED_ORIGINS rompían el arranque) | [PR #99](https://github.com/aaacmsg/debida-diligencia-reforzada/pull/99) | 🟡 PR abierto — verificado E2E |
+| **B — Seguridad P0** | RBAC en endpoints + rate limiting + auditoría WORM | #89, #90, #91 | 🔴 Siguiente |
 | **C — JWT refresh** | Expiración y refresh de tokens | #97 | ⚪ Opcional |
 | **D — Export PDF expediente** | Exportar expediente individual a PDF | #92 | ⚪ Opcional |
 | **E — E2E en CI** | Playwright en GitHub Actions con backend+DB de servicio | #93 | ⚪ Opcional |
