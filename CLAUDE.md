@@ -63,6 +63,7 @@ npx playwright test                            # E2E (requiere backend + DB corr
 
 ## Convenciones
 
+- **Flujo por fases con PR**: cada fase de `tasks.md` se trabaja en rama `fase-<letra>-<tema>` y se entrega como Pull Request a `master` al completarse. Solo docs/contexto pueden ir directo a master.
 - Código, commits y documentación en **español** (los docs históricos evitan tildes en algunos archivos; mantener consistencia con el archivo que edites).
 - Python: flake8 limpio, type hints. TypeScript: strict.
 - Commits pequeños y descriptivos (`fix:`, `feat:` estilo ya usado en el historial).

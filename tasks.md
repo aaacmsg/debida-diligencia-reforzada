@@ -6,6 +6,20 @@
 >
 > Convención: al completar una tarea se marca `[x]` aquí **y** se cierra el issue correspondiente (skill `sync-github`).
 > Contexto: proyecto académico — las fases pendientes deben ser breves y demostrables, no producto comercial.
+>
+> **Flujo de trabajo (definido 2026-07-13):** cada fase pendiente se desarrolla en una rama `fase-<letra>-<tema>` y al completarse se entrega como **Pull Request a `master`**. Nada de commits de features directo a master.
+> **Prioridad actual: CÓDIGO** — lo que se implemente debe poder demostrarse en el video de la entrega.
+
+## Fases de código pendientes (orden de prioridad, 1 PR por fase)
+
+| Fase | Contenido | Issues | Estado |
+|------|-----------|--------|--------|
+| **A — Datos de demo (seed)** | Script de seed: usuarios por rol, clientes (PEP y no PEP) relacionados entre sí, expedientes, alertas — desbloquea el grafo y la demo del video | bloqueo abierto del daily scrum | 🔴 Siguiente |
+| **B — Seguridad P0** | RBAC en endpoints + rate limiting + auditoría WORM | #89, #90, #91 | 🔴 Pendiente |
+| **C — JWT refresh** | Expiración y refresh de tokens | #97 | ⚪ Opcional |
+| **D — Export PDF expediente** | Exportar expediente individual a PDF | #92 | ⚪ Opcional |
+| **E — E2E en CI** | Playwright en GitHub Actions con backend+DB de servicio | #93 | ⚪ Opcional |
+| Futuro documentado (no implementar) | Celery CSVs, email, admin UI, feature flags | #94, #95, #96, #98 | ⚪ Trabajo futuro |
 
 ---
 
