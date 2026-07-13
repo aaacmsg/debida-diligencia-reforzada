@@ -43,9 +43,16 @@ class Settings(BaseSettings):
     # Retention
     retention_years: int = 5
 
+    # Redis (Celery / cache)
+    redis_url: str = "redis://localhost:6379/0"
+
+    # CORS
+    allowed_origins: str = "http://localhost:3000"
+
     class Config:
         env_file = ".env"
         case_sensitive = False
+        extra = "ignore"
 
 
 @lru_cache()
