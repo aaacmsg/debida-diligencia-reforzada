@@ -46,4 +46,6 @@ cd frontend && npx playwright test      # E2E — REQUIERE app corriendo (Opció
 
 - Windows: si un script Python falla con UnicodeEncodeError, agregar `encoding="utf-8"`.
 - Puertos ocupados 3000/8000/5432/6379: revisar contenedores previos con `docker ps`.
-- El grafo se ve vacío sin datos: crear 2-3 clientes relacionados primero (no hay seed automático).
+- El grafo se ve vacío sin datos: correr el seed de demo primero:
+  `docker-compose exec backend python scripts/seed_demo.py` (o local: `cd backend && python scripts/seed_demo.py`).
+  Crea 8 clientes con relaciones PEP, expedientes en todos los estados, alertas y usuarios `oficial/oficial123`, `gerencia/gerencia123`. Es idempotente.
