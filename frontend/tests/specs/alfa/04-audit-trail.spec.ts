@@ -12,8 +12,9 @@ test.describe('ALF-05: Integridad del log de auditoria', () => {
 
       await page.click('button:has-text("Trazabilidad")');
 
-      await expect(page.locator('text=CREAR_CLIENTE')).toBeVisible();
-      await expect(page.locator('text=admin')).toBeVisible();
+      await expect(page.locator('text=CREAR_CLIENTE').first()).toBeVisible();
+      // El evento registra el usuario que lo genero (seed: oficial; suite: admin)
+      await expect(page.locator('text=/admin|oficial/').first()).toBeVisible();
 
       const eventRows = page.locator('table tbody tr');
       const count = await eventRows.count();
