@@ -28,6 +28,14 @@ docker-compose up --build
 
 La primera vez tarda unos minutos porque descarga las imágenes y construye el proyecto. Están listos cuando la consola deja de moverse y se ve el mensaje de Uvicorn corriendo.
 
+> **¿Error "ports are not available: 3000"?** Significa que otro programa ya usa ese puerto. Levanta el frontend en otro puerto así:
+>
+> ```bash
+> FRONTEND_PORT=3002 docker-compose up --build
+> ```
+>
+> y entra por http://127.0.0.1:3002 en lugar del puerto 3000. Todo lo demás funciona igual.
+
 **3. Cargar los datos de demostración** (en otra terminal)
 
 ```bash

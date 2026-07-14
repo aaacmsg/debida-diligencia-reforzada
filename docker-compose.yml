@@ -26,9 +26,12 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      # Si el 3000 esta ocupado: FRONTEND_PORT=3002 docker-compose up -d
+      - "${FRONTEND_PORT:-3000}:3000"
     environment:
-      - VITE_API_URL=http://localhost:8000/api/v1
+      # Las llamadas al API van por el proxy de vite (mismo origen),
+      # asi el frontend funciona en cualquier puerto del host sin CORS
+      - VITE_PROXY_TARGET=http://backend:8000
     depends_on:
       - backend
     volumes:
