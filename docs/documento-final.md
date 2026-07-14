@@ -59,9 +59,13 @@
 
 ## 1. Introducción y descripción del proyecto
 
-El Sistema de Diligencia Debida Reforzada (EDD) es una aplicación web para el cumplimiento de las obligaciones de prevención de blanqueo de capitales y financiamiento del terrorismo (AML/CFT) en Panamá. Se construyó sobre el marco normativo de la Ley 23 de 2015, la Ley 254 de 2021 y la Resolución SBP-RG-PSO-R-2025-00671 de la Superintendencia de Bancos, tomando como referencia las Recomendaciones 10, 12, 19 y 24 del GAFI.
+El presente documento constituye la entrega final del Proyecto Semestral de la materia Ingeniería de Software IV. En él se recoge la retrospectiva del equipo, las adecuaciones realizadas después del Parcial 2, las métricas de calidad aplicadas durante el semestre, el versionamiento del proyecto y las conclusiones individuales y grupales, siguiendo las indicaciones entregadas por la profesora para el cierre del curso.
 
-Funcionalidades principales:
+El producto desarrollado es el Sistema de Diligencia Debida Reforzada (EDD), una aplicación web pensada para que un sujeto obligado en Panamá (por ejemplo, una entidad financiera) pueda cumplir con sus obligaciones de prevención de blanqueo de capitales y financiamiento del terrorismo. En la práctica, esto significa que antes de aceptar a un cliente la institución debe identificarlo, conocer de dónde provienen sus fondos, determinar quiénes son sus beneficiarios finales y evaluar qué tan riesgoso resulta como cliente. Cuando ese riesgo es alto, la ley exige aplicar una diligencia reforzada, que incluye la aprobación expresa de la alta gerencia. El sistema automatiza este proceso completo.
+
+El marco normativo que guio el diseño fue la Ley 23 de 2015, la Ley 254 de 2021 y la Resolución SBP-RG-PSO-R-2025-00671 de la Superintendencia de Bancos, tomando como referencia además las Recomendaciones 10, 12, 19 y 24 del GAFI. Estas normas no se citaron como un requisito formal: cada control del sistema (la fórmula de riesgo, el tratamiento especial de las Personas Expuestas Políticamente, la inmutabilidad de la auditoría, la conservación de registros) responde a un artículo o recomendación concreta, y esa correspondencia se indica a lo largo del documento.
+
+El sistema maneja tres roles de usuario con permisos distintos: el Oficial de Cumplimiento, que registra clientes y revisa expedientes; la Alta Gerencia, que es la única autorizada para aprobar o rechazar los expedientes de alto riesgo; y el Administrador, que configura el sistema y gestiona los usuarios. Las funcionalidades principales son las siguientes:
 
 - Formulario EDD de 7 módulos (identificación, información financiera, beneficiario final, perfil de riesgo, documentación, aprobación y auditoría) con validación en tiempo real.
 - Cálculo automático del nivel de riesgo con una fórmula ponderada de 5 variables: País (25%), Cargo PEP (30%), Sector económico (15%), Vínculos (20%) y Origen de fondos (10%). La clasificación es: bajo (0 a 35), medio (36 a 65) y alto (66 a 100).
@@ -71,15 +75,19 @@ Funcionalidades principales:
 - Trazabilidad inmutable (WORM): cada evento queda registrado con usuario, fecha UTC y dirección IP, y no puede modificarse ni eliminarse (Ley 23, Art. 21).
 - Seguridad: autenticación JWT con refresh de tokens, control de acceso por roles (RBAC), límite de intentos de login por IP y documentos con hash SHA-256.
 
-Tecnologías: FastAPI (Python 3.11), SQLAlchemy 2.0 y PostgreSQL 15 en el backend; React 18 con TypeScript, Vite y TailwindCSS en el frontend; Redis 7; Docker Compose para la ejecución; GitHub Actions para integración continua; pytest y Playwright para las pruebas.
+En cuanto a la tecnología, el equipo eligió FastAPI (Python 3.11) con SQLAlchemy 2.0 y PostgreSQL 15 para el backend, y React 18 con TypeScript, Vite y TailwindCSS para el frontend, apoyados en Redis 7 para tareas de fondo. Todo el sistema se ejecuta con Docker Compose, de manera que cualquier persona pueda levantarlo con un solo comando sin instalar dependencias a mano. La verificación se automatizó con pytest para el backend y Playwright para las pruebas de extremo a extremo, ambas integradas a GitHub Actions para que corran en cada cambio.
 
-Exclusiones documentadas: la consulta a listas restrictivas OFAC/ONU/UE no se implementó porque no existen APIs públicas gratuitas. La firma digital avanzada requiere proveedores comerciales. Ambas quedaron registradas como trabajo futuro en el PRD.
+Es importante dejar constancia de las exclusiones del alcance: la consulta a listas restrictivas internacionales (OFAC, ONU, Unión Europea) no se implementó porque no existen APIs públicas gratuitas para consumirlas, y la firma digital avanzada requiere contratar proveedores comerciales. En lugar de simular estas funcionalidades, el equipo decidió documentarlas como trabajo futuro en el PRD, lo que consideramos una decisión más honesta desde el punto de vista de la ingeniería.
 
 ---
 
 ## 2. Retrospectiva del equipo
 
+La retrospectiva que se presenta a continuación no es una lista de excusas sino un ejercicio honesto de mirar hacia atrás: qué salió mal, qué aprendimos de ello y qué cambiamos en nuestra forma de trabajar como consecuencia. El equipo fue registrando estos puntos durante el semestre (primero en el Daily Scrum del Parcial 2 y luego en la bitácora del cierre), de modo que lo que sigue proviene de notas tomadas en el momento y no de la memoria.
+
 ### 2.1 Problemas enfrentados
+
+Durante el semestre el equipo enfrentó problemas de tres tipos: incompatibilidades de entorno (versiones de Python, diferencias entre Windows y Linux, puertos ocupados), defectos propios del código que no habíamos detectado, y una situación externa que obligó a cambiar el formato de la entrega. La siguiente tabla resume los diez más relevantes, con el impacto que tuvieron sobre el avance y la forma en que se resolvieron. Los defectos de código se explican con más detalle en la sección 3.4.
 
 | # | Problema | Impacto | Resolución |
 |---|----------|---------|------------|
@@ -96,6 +104,8 @@ Exclusiones documentadas: la consulta a listas restrictivas OFAC/ONU/UE no se im
 
 ### 2.2 Lecciones aprendidas
 
+De los problemas anteriores el equipo extrajo cinco lecciones que consideramos el aprendizaje más valioso del semestre, porque cambiaron la manera en que trabajamos y no solo el código que escribimos:
+
 1. **Las pruebas de extremo a extremo encuentran defectos que las unitarias no ven.** El backend tenía 63 pruebas unitarias en verde y aun así el flujo principal de la aplicación (crear un cliente desde la interfaz) estaba roto. La falla solo se hizo visible al ejecutar la suite de Playwright contra el navegador y el backend reales.
 2. **"Parece que funciona" no es suficiente.** Adoptamos la regla de que ninguna tarea se marca como completada sin una verificación reproducible: pytest en verde, build del frontend exitoso y, para cambios de comportamiento, una prueba del flujo real.
 3. **Las diferencias entre entornos cuestan tiempo.** Varios de nuestros bloqueos (Python 3.14, rama `main` contra `master`, codificación en Windows) no eran errores de lógica sino de entorno. Fijar las versiones de las dependencias y usar Docker como entorno de referencia redujo estos problemas.
@@ -103,6 +113,8 @@ Exclusiones documentadas: la consulta a listas restrictivas OFAC/ONU/UE no se im
 5. **La revisión por Pull Request mejora la calidad.** Al dejar de hacer commits directos a `master` y pasar a un flujo de una rama por fase con Pull Request, cada entrega quedó documentada con su verificación y el CI valida los cambios antes de integrarlos.
 
 ### 2.3 Ajustes aplicados al proceso
+
+Las lecciones no se quedaron en el papel. La siguiente tabla compara cómo trabajaba el equipo antes del Parcial 2 y cómo terminó trabajando en el cierre del curso. El cambio más importante fue pasar de commits directos a la rama principal a un flujo de Pull Requests con integración continua obligatoria, porque obliga a que cada cambio llegue revisado y con sus pruebas en verde antes de integrarse.
 
 | Aspecto | Antes | Después |
 |---------|-------|---------|
@@ -115,6 +127,8 @@ Exclusiones documentadas: la consulta a listas restrictivas OFAC/ONU/UE no se im
 
 ### 2.4 Responsabilidades individuales y colectivas
 
+Aunque cada integrante tuvo un frente principal de trabajo, las decisiones de alcance y de arquitectura se tomaron siempre en conjunto, y la revisión de los Pull Requests fue cruzada: nadie integraba su propio trabajo sin que otro integrante lo revisara. La distribución fue la siguiente:
+
 | Integrante | Responsabilidades principales |
 |------------|------------------------------|
 | César Santiago | Administración del repositorio y del tablero de GitHub Projects, integración continua, backend (módulos de riesgo y PEP), coordinación de los Pull Requests |
@@ -126,7 +140,9 @@ Exclusiones documentadas: la consulta a listas restrictivas OFAC/ONU/UE no se im
 
 ## 3. Adecuaciones del Parcial 2
 
-El trabajo posterior al Parcial 2 se organizó en cinco fases. Cada fase se entregó como un Pull Request independiente, con su verificación descrita en el propio PR:
+Al cerrar el Parcial 2 el sistema ya contaba con sus funcionalidades base (formulario EDD, cálculo de riesgo, búsqueda PEP, expedientes, grafo y reportes), pero quedaban pendientes los controles de seguridad de mayor peso regulatorio, la exportación de expedientes y, sobre todo, poner a funcionar de verdad las pruebas de extremo a extremo, que estaban escritas pero nunca habían corrido completas. El equipo organizó ese trabajo pendiente en cinco fases, ordenadas por prioridad: primero lo que desbloqueaba las demostraciones (los datos de ejemplo), luego la seguridad, y por último la exportación y la automatización de pruebas.
+
+Cada fase se entregó como un Pull Request independiente. Esto permite que cualquier persona (incluida la profesora) pueda abrir el enlace del PR y ver exactamente qué archivos cambiaron, qué verificación se hizo y qué issues quedaron cerrados con ese cambio:
 
 | Fase | Contenido | Pull Request | Issues cerrados |
 |------|-----------|--------------|-----------------|
@@ -137,6 +153,8 @@ El trabajo posterior al Parcial 2 se organizó en cinco fases. Cada fase se entr
 | E | Pruebas E2E de Playwright en GitHub Actions | [PR #101](https://github.com/aaacmsg/debida-diligencia-reforzada/pull/101) | #93 |
 
 ### 3.1 Funcionalidades ajustadas y nuevas
+
+A continuación se describe cada funcionalidad agregada o ajustada durante el cierre. Para cada una se indica el issue de GitHub que le dio origen, de modo que se pueda rastrear desde el requisito hasta el código y sus pruebas.
 
 **Control de acceso por roles (issue #89).** Se agregó la dependencia `require_roles()` en `backend/app/core/security.py`, que aplica el principio de menor privilegio:
 
@@ -166,7 +184,9 @@ El trabajo posterior al Parcial 2 se organizó en cinco fases. Cada fase se entr
 
 ### 3.3 Métricas aplicadas (ISTQB, TMMi, TQM)
 
-Las métricas se midieron con herramientas automatizadas (pytest-cov, radon, flake8, bandit) sobre el código real del proyecto. El detalle completo, con los valores y su interpretación, está en el **Anexo C**. Resumen de la evolución entre el Parcial 2 y el cierre:
+Siguiendo el enfoque de la Unidad II de la materia (Medición de la Calidad del Software), el equipo no se limitó a decir que el producto mejoró: lo midió. Las métricas provienen de herramientas automatizadas que se ejecutan sobre el código real del proyecto: pytest-cov para la cobertura de pruebas, radon para la complejidad ciclomática, flake8 para las incidencias de estilo y bandit para el análisis de seguridad estática. Estas mismas herramientas corren cada semana en un workflow de GitHub Actions que genera un dashboard de métricas, de modo que la medición no dependió de correrlas a mano una sola vez.
+
+El detalle completo de cada métrica, con su valor y su interpretación, está en el **Anexo C**. Como resumen, la siguiente tabla muestra la evolución entre la medición del Parcial 2 (15 de junio) y la del cierre (14 de julio). El salto más significativo es el de la cobertura, que pasó del 26% al 70% del código del backend gracias a las pruebas de integración por API que se agregaron en las fases B a E:
 
 | Métrica | Parcial 2 | Cierre | Variación |
 |---------|-----------|--------|-----------|
@@ -179,7 +199,7 @@ Las métricas se midieron con herramientas automatizadas (pytest-cov, radon, fla
 
 ### 3.4 Defectos corregidos
 
-Durante el cierre se detectaron y corrigieron 7 defectos reales. La mayoría los encontraron las pruebas E2E, lo que confirma el valor de haberlas puesto a funcionar:
+Durante el cierre se detectaron y corrigieron 7 defectos reales. Vale la pena detenerse en este punto: antes de estas correcciones el proyecto tenía 63 pruebas unitarias en verde y en apariencia todo funcionaba, y aun así tres de estos defectos eran críticos, incluyendo uno que impedía por completo crear clientes desde la interfaz. La mayoría los encontraron las pruebas de extremo a extremo al ponerlas a funcionar, lo que para el equipo fue la demostración más clara del valor de ese tipo de pruebas. Cada defecto se documenta con su severidad, cómo se detectó y en qué Pull Request quedó corregido:
 
 | # | Defecto | Severidad | Cómo se detectó | Corrección |
 |---|---------|-----------|-----------------|------------|
@@ -192,6 +212,8 @@ Durante el cierre se detectaron y corrigieron 7 defectos reales. La mayoría los
 | 7 | 17 de las 25 pruebas E2E corrían sin autenticación y una buscaba una tabla que la interfaz no tiene; en local una de ellas se saltaba su propio contenido por una verificación sin espera | Alta | Primera ejecución completa de la suite | Fixture y pruebas reescritos (PR #101) |
 
 ### 3.5 Decisiones técnicas y su justificación
+
+A lo largo del cierre el equipo tuvo que elegir entre alternativas técnicas en varios puntos. La siguiente tabla registra las decisiones más importantes y la razón por la que se tomaron, porque entendemos que en ingeniería una decisión sin justificación documentada es una decisión que el siguiente equipo va a tener que redescubrir:
 
 | Decisión | Justificación |
 |----------|---------------|
@@ -209,6 +231,8 @@ Durante el cierre se detectaron y corrigieron 7 defectos reales. La mayoría los
 ---
 
 ## 4. Versionamiento
+
+Esta sección presenta el versionamiento en dos niveles: el del documento (cómo fue evolucionando esta entrega a lo largo del semestre) y el del software (cómo se controlaron los cambios del código en Git). En ambos casos el objetivo es el mismo: que cualquier cambio tenga fecha, autor, descripción y justificación, y que se pueda reconstruir la historia del proyecto sin depender de la memoria de nadie.
 
 ### 4.1 Historial de versiones del documento
 
@@ -247,6 +271,8 @@ Desde el cierre del Parcial 2, ningún cambio de funcionalidad entra directo a `
 ---
 
 ## 5. Conclusiones
+
+Las conclusiones se presentan en el orden que pide la guía de la entrega: primero la reflexión individual de cada integrante sobre su aprendizaje técnico y de proceso, luego la conclusión del equipo sobre la calidad del producto, la evaluación del trabajo colaborativo y, por último, las recomendaciones que dejamos para quien continúe el proyecto.
 
 ### 5.1 Conclusiones y reflexiones individuales
 
@@ -294,7 +320,9 @@ El proceso mejoró a lo largo del semestre. Al inicio cada integrante trabajaba 
 
 ### Anexo A. Capturas del sistema
 
-> Las capturas se insertan en la versión PDF. Cada marcador indica la imagen requerida.
+Las siguientes capturas muestran el sistema en funcionamiento con los datos de demostración cargados. Se seleccionaron para cubrir el recorrido completo de un expediente: desde el inicio de sesión y el registro del cliente hasta la aprobación gerencial, pasando por la detección PEP, el grafo de relaciones y la exportación a PDF.
+
+> Las capturas se insertan en la versión PDF. Cada marcador indica la imagen requerida. Los pasos para obtener cada una están en el archivo `docs/guia-capturas.md` del repositorio.
 
 - **A.1** `<INSERTAR IMAGEN: pantalla de Login>`
 - **A.2** `<INSERTAR IMAGEN: Dashboard con las tarjetas de totales y los gráficos por estado y por nivel de riesgo (datos del seed: 8 expedientes, 3 alto, 2 medio, 3 bajo)>`
@@ -309,9 +337,13 @@ El proceso mejoró a lo largo del semestre. Al inicio cada integrante trabajaba 
 
 ### Anexo B. Reportes de pruebas ejecutadas y resultados
 
+Como parte del plan de pruebas definido en mayo (`plan-de-pruebas.md`), el equipo ejecutó un total de **116 pruebas automatizadas**, organizadas en dos suites complementarias: 91 pruebas de backend con pytest (unitarias y de integración por API) y 25 pruebas de extremo a extremo con Playwright, que abren un navegador real y recorren la aplicación como lo haría un usuario. Las pruebas de extremo a extremo siguen la clasificación del plan original en tres categorías: alfa (lógica interna y seguridad), beta (cumplimiento normativo) y UX (experiencia de usuario, responsividad y accesibilidad).
+
+Se decidió mantener ambas suites porque cubren riesgos distintos: las pruebas de backend verifican que cada regla de negocio calcule lo correcto (por ejemplo, que un cliente de Irán con cargo de ministro obtenga el puntaje esperado), mientras que las de extremo a extremo verifican que el sistema completo funcione integrado, desde el clic del usuario hasta la base de datos. De hecho, los defectos más graves del cierre solo los detectó la segunda suite. A continuación se presenta el detalle de cada una con sus resultados.
+
 #### B.1 Pruebas de backend (pytest)
 
-Ejecutadas en GitHub Actions y dentro del contenedor Docker contra PostgreSQL. Resultado de la última corrida: **91 pruebas aprobadas, 0 fallidas** (una de ellas, la del límite de intentos, se omite automáticamente cuando el entorno tiene el límite elevado para las pruebas E2E).
+Estas 91 pruebas se ejecutan en GitHub Actions en cada Pull Request y también pueden correrse dentro del contenedor Docker contra PostgreSQL. Resultado de la última corrida: **91 pruebas aprobadas, 0 fallidas** (una de ellas, la del límite de intentos de login, se omite automáticamente cuando el entorno tiene el límite elevado para las pruebas E2E, y corre normal en el CI).
 
 | Archivo de pruebas | Cantidad | Qué verifica | Resultado |
 |--------------------|----------|--------------|-----------|
@@ -327,7 +359,7 @@ Ejecutadas en GitHub Actions y dentro del contenedor Docker contra PostgreSQL. R
 
 #### B.2 Pruebas E2E (Playwright, navegador Chromium)
 
-Ejecutadas en GitHub Actions contra el sistema completo (frontend, backend y base de datos con los datos de demostración). Resultado de la última corrida: **25 pruebas aprobadas, 0 fallidas**, duración total aproximada de 1 minuto. Correspondencia con el plan de pruebas (`plan-de-pruebas.md`):
+Estas 25 pruebas se ejecutan en GitHub Actions contra el sistema completo: el workflow levanta la base de datos, el backend y el frontend con Docker Compose, carga los datos de demostración y recién entonces corre la suite con un navegador Chromium. Resultado de la última corrida: **25 pruebas aprobadas, 0 fallidas**, con una duración total aproximada de 1 minuto. La tabla indica, para cada caso, a qué prueba del plan original corresponde:
 
 | N.° | Caso | Prueba del plan | Resultado |
 |-----|------|-----------------|-----------|
@@ -365,7 +397,7 @@ Nota sobre BET-03 (listas OFAC/ONU/UE): no aplica, documentado como exclusión p
 
 ### Anexo C. Métricas aplicadas con valores reales e interpretación
 
-Medición realizada el 14 de julio de 2026 sobre el código del cierre, con las herramientas indicadas.
+Todas las cifras de este anexo provienen de una medición realizada el 14 de julio de 2026 sobre el código final del proyecto, ejecutando las herramientas indicadas en cada fila. Ningún valor es estimado. Las métricas se agrupan según las tres dimensiones trabajadas en la materia: las de pruebas (enfoque ISTQB), las de código y las de proceso (enfoque TMMi y TQM). Junto a cada valor se incluye su interpretación, porque un número sin lectura no orienta ninguna decisión: la interpretación es la que indica si el valor es aceptable y qué acción correspondería tomar.
 
 #### C.1 Métricas de pruebas (ISTQB)
 
@@ -402,6 +434,8 @@ Medición realizada el 14 de julio de 2026 sobre el código del cierre, con las 
 - **C.4** `<INSERTAR IMAGEN: dashboard de métricas generado por scripts/generate_metrics_dashboard.py>`
 
 ### Anexo D. Evidencias de gestión y versionamiento
+
+Estas capturas evidencian que la gestión del proyecto se llevó en la misma plataforma que el código: el tablero de GitHub Projects para el estado de las tareas, los issues para el detalle de cada una, el historial de commits y Pull Requests para los cambios, y GitHub Actions para la verificación automática.
 
 - **D.1** `<INSERTAR IMAGEN: tablero de GitHub Projects con las columnas Backlog, In progress y Done>`
 - **D.2** `<INSERTAR IMAGEN: lista de issues con sus etiquetas, mostrando cerrados y abiertos>`
