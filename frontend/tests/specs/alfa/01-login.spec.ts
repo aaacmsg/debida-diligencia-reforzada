@@ -9,8 +9,8 @@ test.describe('ALF-06: Autenticacion', () => {
     await page.click('button:has-text("Iniciar Sesion")');
 
     await expect(page).toHaveURL('/dashboard');
-    await expect(page.locator('text=Diligencia Reforzada')).toBeVisible();
-    await expect(page.locator('text=Dashboard')).toBeVisible();
+    await expect(page.locator('text=Diligencia Reforzada').first()).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
   });
 
   test('TC-02: Login fallido muestra error', async ({ page }) => {

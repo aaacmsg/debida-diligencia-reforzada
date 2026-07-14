@@ -2,29 +2,29 @@ import { test, expect } from '../../fixtures/auth.fixture';
 
 test.describe('ALF-05: Integridad del log de auditoria', () => {
 
-  test('TC-09: Crear cliente genera evento de auditoria', async ({ page }) => {
+  test('TC-09: Crear cliente genera evento de auditoria', async ({ authPage: page }) => {
     await page.goto('/expedientes');
 
     const expedienteLink = page.locator('a:has-text("EDD-")').first();
-    if (await expedienteLink.isVisible()) {
-      await expedienteLink.click();
-      await page.waitForURL(/\/expedientes\/\d+/);
+    await expect(expedienteLink).toBeVisible({ timeout: 10000 });
+    await expedienteLink.click();
+    await page.waitForURL(/\/expedientes\/\d+/);
 
-      await page.click('button:has-text("Trazabilidad")');
+    await page.click('button:has-text("Trazabilidad")');
 
-      await expect(page.locator('text=CREAR_CLIENTE')).toBeVisible();
-      await expect(page.locator('text=admin')).toBeVisible();
+    await expect(page.locator('text=CREAR_CLIENTE').first()).toBeVisible();
+    // El evento registra el usuario que lo genero (seed: oficial; suite: admin)
+    await expect(page.locator('text=/admin|oficial/').first()).toBeVisible();
 
-      const eventRows = page.locator('table tbody tr');
-      const count = await eventRows.count();
-      expect(count).toBeGreaterThanOrEqual(1);
-    }
+    // La trazabilidad se renderiza como timeline de divs, no como tabla
+    const eventos = page.locator('[data-testid="evento-auditoria"]');
+    expect(await eventos.count()).toBeGreaterThanOrEqual(1);
   });
 });
 
 test.describe('ALF-08: Trazabilidad de modificaciones', () => {
 
-  test('TC-10: Editar cliente genera evento de auditoria', async ({ page }) => {
+  test('TC-10: Editar cliente genera evento de auditoria', async ({ authPage: page }) => {
     await page.goto('/clientes');
 
     const editBtn = page.locator('button:has-text("Editar")').first();
@@ -42,10 +42,11 @@ test.describe('ALF-08: Trazabilidad de modificaciones', () => {
 
 test.describe('ALF-09: Conservacion de registros', () => {
 
-  test('Eventos tienen created_at', async ({ page }) => {
+  test('Eventos tienen created_at', async ({ authPage: page }) => {
     await page.goto('/reportes');
 
     const rows = page.locator('table tbody tr');
+    await expect(rows.first()).toBeVisible({ timeout: 10000 });
     const count = await rows.count();
     expect(count).toBeGreaterThanOrEqual(1);
 

@@ -30,6 +30,7 @@ export default function ExpedienteDetailPage() {
   const [eventos, setEventos] = useState<EventoAuditoria[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [activeTab, setActiveTab] = useState<'detalle' | 'documentos' | 'trazabilidad'>('detalle');
 
   useEffect(() => {
@@ -72,6 +73,19 @@ export default function ExpedienteDetailPage() {
       toast.error(err.response?.data?.detail || 'Error al subir documento');
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleExportarPdf = async () => {
+    if (!expediente) return;
+    setExporting(true);
+    try {
+      await expedienteService.exportarPdf(Number(id), expediente.numero_expediente);
+      toast.success('PDF exportado');
+    } catch (err) {
+      toast.error('Error al exportar PDF');
+    } finally {
+      setExporting(false);
     }
   };
 
@@ -120,6 +134,7 @@ export default function ExpedienteDetailPage() {
         <div className="flex items-center space-x-4">
           <button
             onClick={() => navigate('/expedientes')}
+            aria-label="Volver a expedientes"
             className="p-2 hover:bg-gray-100 rounded-lg"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -141,6 +156,15 @@ export default function ExpedienteDetailPage() {
               Score: {expediente.score_riesgo.toFixed(0)}
             </span>
           )}
+          <button
+            onClick={handleExportarPdf}
+            disabled={exporting}
+            className="btn-primary flex items-center"
+            aria-label="Exportar expediente a PDF"
+          >
+            <Download className="w-5 h-5 mr-2" />
+            {exporting ? 'Exportando...' : 'Exportar PDF'}
+          </button>
         </div>
       </div>
 
@@ -350,6 +374,7 @@ export default function ExpedienteDetailPage() {
                       onClick={() => documentoService.download(
                         Number(id), doc.id, doc.nombre_archivo
                       )}
+                      aria-label="Descargar documento"
                       className="p-1 hover:bg-gray-200 rounded"
                     >
                       <Download className="w-4 h-4" />
@@ -373,7 +398,7 @@ export default function ExpedienteDetailPage() {
           ) : (
             <div className="space-y-4">
               {eventos.map((evento) => (
-                <div key={evento.id} className="flex items-start space-x-3">
+                <div key={evento.id} data-testid="evento-auditoria" className="flex items-start space-x-3">
                   <div className="p-2 bg-gray-100 rounded-full">
                     <Clock className="w-4 h-4 text-gray-500" />
                   </div>

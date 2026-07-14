@@ -45,8 +45,9 @@ const clienteSchema = z.object({
   pais_residencia_fiscal: z.string().optional(),
   actividad_economica: z.string().optional(),
   sector_economico: z.string().optional(),
-  ingresos_anuales: z.number().optional(),
-  patrimonio: z.number().optional(),
+  // valueAsNumber produce NaN cuando el input esta vacio; tratarlo como "sin valor"
+  ingresos_anuales: z.preprocess((v) => (typeof v === 'number' && Number.isNaN(v) ? undefined : v), z.number().optional()),
+  patrimonio: z.preprocess((v) => (typeof v === 'number' && Number.isNaN(v) ? undefined : v), z.number().optional()),
   origen_fondos: z.string().optional(),
   comentario_aprobacion: z.string().optional(),
 }).superRefine((data, ctx) => {
@@ -121,10 +122,35 @@ export default function ClientesPage() {
     }
   };
 
+  // El backend rechaza "" en campos tipados (EmailStr, datetime) y NaN en numericos:
+  // los campos opcionales sin valor deben viajar como undefined
+  const limpiarPayload = (data: ClienteFormData): ClienteFormData => {
+    const limpio = { ...data };
+    (Object.keys(limpio) as (keyof ClienteFormData)[]).forEach((key) => {
+      const valor = limpio[key];
+      if (valor === '' || (typeof valor === 'number' && Number.isNaN(valor))) {
+        delete limpio[key];
+      }
+    });
+    return limpio;
+  };
+
+  const mensajeError = (err: unknown, fallback: string): string => {
+    const detail = (err as { response?: { data?: { detail?: unknown } } })?.response?.data?.detail;
+    if (typeof detail === 'string') return detail;
+    if (Array.isArray(detail)) {
+      return detail
+        .map((d) => `${(d.loc || []).join('.')}: ${d.msg}`)
+        .join('; ')
+        .slice(0, 300) || fallback;
+    }
+    return fallback;
+  };
+
   const onSubmit = async (data: ClienteFormData) => {
     setSubmitting(true);
     try {
-      const nuevoCliente = await clienteService.create(data);
+      const nuevoCliente = await clienteService.create(limpiarPayload(data));
 
       for (const bf of beneficiarios) {
         await beneficiarioService.create(nuevoCliente.id, bf);
@@ -135,8 +161,8 @@ export default function ClientesPage() {
       setBeneficiarios([]);
       reset();
       fetchClientes();
-    } catch (err: any) {
-      toast.error(err.response?.data?.detail || 'Error al guardar cliente');
+    } catch (err) {
+      toast.error(mensajeError(err, 'Error al guardar cliente'));
     } finally {
       setSubmitting(false);
     }
@@ -200,14 +226,14 @@ export default function ClientesPage() {
     if (!editingCliente) return;
     setSubmitting(true);
     try {
-      await clienteService.update(editingCliente.id, data);
+      await clienteService.update(editingCliente.id, limpiarPayload(data));
       toast.success('Cliente actualizado exitosamente');
       setShowForm(false);
       setEditingCliente(null);
       reset();
       fetchClientes();
-    } catch (err: any) {
-      toast.error(err.response?.data?.detail || 'Error al actualizar cliente');
+    } catch (err) {
+      toast.error(mensajeError(err, 'Error al actualizar cliente'));
     } finally {
       setSubmitting(false);
     }
@@ -820,10 +846,10 @@ export default function ClientesPage() {
                   <td className="py-3 text-xs text-gray-500">{cliente.cargo_pep || '-'}</td>
                   <td className="py-3">
                     <div className="flex space-x-2">
-                      <button onClick={() => handleEdit(cliente)} className="p-1 hover:bg-gray-100 rounded" title="Editar">
+                      <button onClick={() => handleEdit(cliente)} className="p-1 hover:bg-gray-100 rounded" aria-label="Editar cliente" title="Editar">
                         <Edit2 className="w-4 h-4 text-gray-500" />
                       </button>
-                      <button onClick={() => handleDelete(cliente.id)} className="p-1 hover:bg-gray-100 rounded" title="Eliminar">
+                      <button onClick={() => handleDelete(cliente.id)} className="p-1 hover:bg-gray-100 rounded" aria-label="Eliminar cliente" title="Eliminar">
                         <Trash2 className="w-4 h-4 text-red-500" />
                       </button>
                     </div>

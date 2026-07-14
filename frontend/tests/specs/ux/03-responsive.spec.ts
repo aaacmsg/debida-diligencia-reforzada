@@ -2,7 +2,7 @@ import { test, expect } from '../../fixtures/auth.fixture';
 
 test.describe('UX-06: Responsividad', () => {
 
-  test('TC-18: Mobile 320px - sin scroll horizontal', async ({ page }) => {
+  test('TC-18: Mobile 320px - sin scroll horizontal', async ({ authPage: page }) => {
     await page.setViewportSize({ width: 320, height: 568 });
 
     const pages = ['/dashboard', '/clientes', '/expedientes', '/pep', '/reportes', '/grafo'];
@@ -16,7 +16,7 @@ test.describe('UX-06: Responsividad', () => {
     }
   });
 
-  test('TC-19: Tablet 768px - layout adaptado', async ({ page }) => {
+  test('TC-19: Tablet 768px - layout adaptado', async ({ authPage: page }) => {
     await page.setViewportSize({ width: 768, height: 1024 });
 
     await page.goto('/clientes');

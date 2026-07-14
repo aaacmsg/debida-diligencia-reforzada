@@ -2,38 +2,32 @@ import { test, expect } from '../../fixtures/auth.fixture';
 
 test.describe('UX-04: Grafo de relaciones', () => {
 
-  test('TC-15: Grafo carga con nodos y aristas', async ({ page }) => {
+  test('TC-15: Grafo carga con nodos y aristas', async ({ authPage: page }) => {
     await page.goto('/grafo');
 
-    await expect(page.locator('svg')).toBeVisible();
-    await expect(page.locator('text=Leyenda')).toBeVisible();
-    await expect(page.locator('text=Cliente')).toBeVisible();
-    await expect(page.locator('text=PEP')).toBeVisible();
+    await expect(page.locator('svg').first()).toBeVisible();
+    const leyenda = page.getByTestId('grafo-leyenda');
+    await expect(leyenda).toBeVisible();
+    await expect(leyenda.getByText('Cliente', { exact: true })).toBeVisible();
+    await expect(leyenda.getByText('PEP', { exact: true })).toBeVisible();
   });
 
-  test('TC-16: Controles de zoom funcionan', async ({ page }) => {
+  test('TC-16: Controles de zoom funcionan', async ({ authPage: page }) => {
     await page.goto('/grafo');
 
-    const zoomValue = page.locator('text=/Zoom.*\\d+%/');
+    await expect(page.locator('text=/Zoom.*\\d+%/')).toBeVisible();
 
-    const zoomInBtn = page.locator('button:has-text("Zoom In")');
-    if (await zoomInBtn.isVisible()) {
-      await zoomInBtn.click();
-      await expect(page.locator('text=/Zoom.*\\d+%/')).toBeVisible();
-    }
+    await page.getByLabel('Acercar').click();
+    await expect(page.locator('text=/Zoom: 120%/')).toBeVisible();
 
-    const zoomOutBtn = page.locator('button:has-text("Zoom Out")');
-    if (await zoomOutBtn.isVisible()) {
-      await zoomOutBtn.click();
-    }
+    await page.getByLabel('Alejar').click();
+    await expect(page.locator('text=/Zoom: 100%/')).toBeVisible();
 
-    const resetBtn = page.locator('button:has-text("Reset")');
-    if (await resetBtn.isVisible()) {
-      await resetBtn.click();
-    }
+    await page.getByLabel('Restablecer vista').click();
+    await expect(page.locator('text=/Zoom: 100%/')).toBeVisible();
   });
 
-  test('TC-17: Nodos son arrastrables', async ({ page }) => {
+  test('TC-17: Nodos son arrastrables', async ({ authPage: page }) => {
     await page.goto('/grafo');
 
     const circle = page.locator('svg circle').first();

@@ -1,5 +1,10 @@
 import { defineConfig, devices } from '@playwright/test';
 
+// Parametrizable para entornos donde el puerto 3000 esta ocupado:
+//   E2E_HOST=127.0.0.1 E2E_PORT=3001 npx playwright test
+const E2E_PORT = Number(process.env.E2E_PORT || 3000);
+const E2E_HOST = process.env.E2E_HOST || 'localhost';
+
 export default defineConfig({
   testDir: './tests/specs',
   fullyParallel: false,
@@ -11,7 +16,7 @@ export default defineConfig({
     ['list'],
   ],
   use: {
-    baseURL: 'http://localhost:3000',
+    baseURL: `http://${E2E_HOST}:${E2E_PORT}`,
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
@@ -23,10 +28,12 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npx vite --host 0.0.0.0 --port 3000',
-    port: 3000,
+    command: `npx vite --host 0.0.0.0 --port ${E2E_PORT} --strictPort`,
+    // url (no port): valida contra la IP exacta y evita reutilizar por error
+    // otro servidor que escuche el mismo puerto solo en IPv6
+    url: `http://${E2E_HOST}:${E2E_PORT}`,
     cwd: '.',
     reuseExistingServer: true,
-    timeout: 30000,
+    timeout: 60000,
   },
 });

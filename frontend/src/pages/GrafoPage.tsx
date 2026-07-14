@@ -205,21 +205,38 @@ export default function GrafoPage() {
       {/* Toolbar */}
       <div className="card flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <button onClick={handleZoomIn} className="p-2 hover:bg-gray-100 rounded-lg">
+          <button onClick={handleZoomIn} aria-label="Acercar" className="p-2 hover:bg-gray-100 rounded-lg">
             <ZoomIn className="w-5 h-5" />
           </button>
-          <button onClick={handleZoomOut} className="p-2 hover:bg-gray-100 rounded-lg">
+          <button onClick={handleZoomOut} aria-label="Alejar" className="p-2 hover:bg-gray-100 rounded-lg">
             <ZoomOut className="w-5 h-5" />
           </button>
-          <button onClick={handleReset} className="p-2 hover:bg-gray-100 rounded-lg">
+          <button onClick={handleReset} aria-label="Restablecer vista" className="p-2 hover:bg-gray-100 rounded-lg">
             <RefreshCw className="w-5 h-5" />
           </button>
-          <button onClick={handleReRun} disabled={simulating} className="p-2 hover:bg-gray-100 rounded-lg">
+          <button onClick={handleReRun} disabled={simulating} aria-label="Recalcular simulacion" className="p-2 hover:bg-gray-100 rounded-lg">
             <Play className={`w-5 h-5 ${simulating ? 'animate-spin' : ''}`} />
           </button>
           <span className="text-sm text-gray-500">
             Zoom: {(zoom * 100).toFixed(0)}% | {graphData.nodes.length} nodos, {graphData.edges.length} aristas
           </span>
+        </div>
+        <div data-testid="grafo-leyenda" className="flex items-center space-x-4 text-xs text-gray-600">
+          <span className="font-medium">Leyenda:</span>
+          {[
+            { color: COLORS.cliente, label: 'Cliente' },
+            { color: COLORS.peo, label: 'PEP' },
+            { color: COLORS.persona, label: 'Persona' },
+            { color: COLORS.documento, label: 'Documento' },
+          ].map((item) => (
+            <span key={item.label} className="flex items-center">
+              <span
+                className="w-3 h-3 rounded-full mr-1.5 inline-block"
+                style={{ backgroundColor: item.color }}
+              />
+              {item.label}
+            </span>
+          ))}
         </div>
       </div>
 
