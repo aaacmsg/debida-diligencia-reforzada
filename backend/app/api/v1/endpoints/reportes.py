@@ -5,7 +5,7 @@ from sqlalchemy import func, or_
 from datetime import datetime, timedelta
 from typing import Optional
 from app.core.database import get_db
-from app.core.security import get_current_user
+from app.core.security import get_current_user, require_roles
 from app.models.models import Expediente, Cliente, Documento, EventoAuditoria, BeneficiarioFinal, EstadoExpediente, NivelRiesgo
 
 router = APIRouter()
@@ -30,8 +30,8 @@ def dashboard(
 
     return {
         "total_expedientes": total_expedientes,
-        "por_estado": {str(estado): count for estado, count in por_estado},
-        "por_riesgo": {str(riesgo): count for riesgo, count in por_riesgo}
+        "por_estado": {estado.value: count for estado, count in por_estado},
+        "por_riesgo": {riesgo.value: count for riesgo, count in por_riesgo}
     }
 
 
@@ -57,8 +57,8 @@ def reporte_expedientes(
         "id": exp.id,
         "numero_expediente": exp.numero_expediente,
         "cliente_nombre": f"{cli.nombre} {cli.apellido or ''}",
-        "estado": str(exp.estado),
-        "nivel_riesgo": str(exp.nivel_riesgo),
+        "estado": exp.estado.value,
+        "nivel_riesgo": exp.nivel_riesgo.value,
         "score_riesgo": exp.score_riesgo,
         "created_at": exp.created_at.isoformat() if exp.created_at else None
     } for exp, cli in resultados]
@@ -70,7 +70,8 @@ def reporte_auditoria(
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user)
+    # CA-04.1: trazabilidad solo para Oficial de Cumplimiento y Admin
+    current_user: dict = Depends(require_roles("oficial_cumplimiento"))
 ):
     query = db.query(EventoAuditoria)
 

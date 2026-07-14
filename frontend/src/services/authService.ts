@@ -9,6 +9,7 @@ export interface LoginRequest {
 export interface LoginResponse {
   access_token: string;
   token_type: string;
+  refresh_token?: string;
 }
 
 export interface RegisterRequest {
@@ -30,6 +31,9 @@ export const authService = {
     });
     
     localStorage.setItem('access_token', response.data.access_token);
+    if (response.data.refresh_token) {
+      localStorage.setItem('refresh_token', response.data.refresh_token);
+    }
     return response.data;
   },
 
@@ -45,6 +49,7 @@ export const authService = {
 
   logout() {
     localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
   },
 
   getToken(): string | null {
