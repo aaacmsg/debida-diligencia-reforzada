@@ -243,6 +243,7 @@ Esta sección presenta el versionamiento en dos niveles: el del documento (cómo
 | 0.3 | 2026-07-13 | Consolidación de tareas por fases y documentos de contexto | Preparación del cierre |
 | 1.0 | 2026-07-14 | Documento final: retrospectiva, adecuaciones, métricas y conclusiones | Entrega de cierre del curso |
 | 1.1 | 2026-07-14 | Anexos con tablas de pruebas ejecutadas y métricas con valores reales; ajustes de redacción | Cumplir el formato de entrega solicitado |
+| 1.2 | 2026-07-14 | Párrafos introductorios en cada sección y anexo; guía de capturas y guion del video como documentos anexos | Mejorar la legibilidad del informe y facilitar la producción de las evidencias y del video |
 
 ### 4.2 Control de versiones del software (Git)
 
