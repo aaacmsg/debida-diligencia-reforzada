@@ -76,6 +76,28 @@ Esto crea 8 clientes de ejemplo (incluye un ministro PEP), expedientes con riesg
 
 ---
 
+## Vistas del sistema
+
+**Dashboard** con el resumen de expedientes por estado y nivel de riesgo:
+
+![Dashboard](docs/img/a2.png)
+
+**Búsqueda PEP** contra los datos oficiales, con coincidencia exacta por cédula:
+
+![Búsqueda PEP](docs/img/a7.png)
+
+**Grafo de relaciones**: el cliente PEP (naranja) como accionista de dos sociedades:
+
+![Grafo de relaciones](docs/img/a8.png)
+
+**Expediente** con trazabilidad y exportación a PDF:
+
+![Detalle de expediente](docs/img/a5.png)
+
+Más capturas en el [documento final](docs/documento-final.md) (Anexo A).
+
+---
+
 ## Funcionalidades principales
 
 - Formulario EDD de 7 módulos con validación en tiempo real (Ley 23, Art. 15-18).

@@ -244,6 +244,7 @@ Esta sección presenta el versionamiento en dos niveles: el del documento (cómo
 | 1.0 | 2026-07-14 | Documento final: retrospectiva, adecuaciones, métricas y conclusiones | Entrega de cierre del curso |
 | 1.1 | 2026-07-14 | Anexos con tablas de pruebas ejecutadas y métricas con valores reales; ajustes de redacción | Cumplir el formato de entrega solicitado |
 | 1.2 | 2026-07-14 | Párrafos introductorios en cada sección y anexo; guía de capturas y guion del video como documentos anexos | Mejorar la legibilidad del informe y facilitar la producción de las evidencias y del video |
+| 1.3 | 2026-07-14 | Capturas reales insertadas en los anexos (21 figuras) y generación de la versión .docx | Completar las evidencias y preparar el formato de entrega |
 
 ### 4.2 Control de versiones del software (Git)
 
@@ -323,18 +324,45 @@ El proceso mejoró a lo largo del semestre. Al inicio cada integrante trabajaba 
 
 Las siguientes capturas muestran el sistema en funcionamiento con los datos de demostración cargados. Se seleccionaron para cubrir el recorrido completo de un expediente: desde el inicio de sesión y el registro del cliente hasta la aprobación gerencial, pasando por la detección PEP, el grafo de relaciones y la exportación a PDF.
 
-> Las capturas se insertan en la versión PDF. Cada marcador indica la imagen requerida. Los pasos para obtener cada una están en el archivo `docs/guia-capturas.md` del repositorio.
+**Figura A.1.** Pantalla de inicio de sesión, con la referencia al marco legal en el pie.
 
-- **A.1** `<INSERTAR IMAGEN: pantalla de Login>`
-- **A.2** `<INSERTAR IMAGEN: Dashboard con las tarjetas de totales y los gráficos por estado y por nivel de riesgo (datos del seed: 8 expedientes, 3 alto, 2 medio, 3 bajo)>`
-- **A.3** `<INSERTAR IMAGEN: formulario EDD con los módulos en acordeón y la sección PEP visible al marcar la casilla>`
-- **A.4** `<INSERTAR IMAGEN: lista de Expedientes con los distintivos de estado y riesgo>`
-- **A.5** `<INSERTAR IMAGEN: detalle de un expediente con las pestañas Detalle, Documentos y Trazabilidad, y el botón Exportar PDF>`
-- **A.6** `<INSERTAR IMAGEN: PDF exportado del expediente del cliente PEP (EDD-...-SEED0002)>`
-- **A.7** `<INSERTAR IMAGEN: búsqueda PEP con coincidencia exacta por cédula 8-702-3355 y score 100>`
-- **A.8** `<INSERTAR IMAGEN: grafo de relaciones con el cliente PEP conectado a dos empresas y la leyenda de colores>`
-- **A.9** `<INSERTAR IMAGEN: panel de alertas abierto desde la campana>`
-- **A.10** `<INSERTAR IMAGEN: aprobación de un expediente con el comentario obligatorio>`
+![Figura A.1. Pantalla de login](img/a1.png)
+
+**Figura A.2.** Dashboard con los datos de demostración: 8 expedientes en total, distribución por estado en el gráfico de pastel y por nivel de riesgo en el de barras (3 alto, 2 medio, 3 bajo).
+
+![Figura A.2. Dashboard](img/a2.png)
+
+**Figura A.3.** Formulario EDD con los módulos en acordeón. Al marcar la casilla PEP se despliega la sección de información obligatoria (cargo, tipo de relación y país de residencia fiscal).
+
+![Figura A.3. Formulario EDD con sección PEP](img/a3.png)
+
+**Figura A.4.** Lista de expedientes con los distintivos de estado (Pendiente Gerencia, Aprobado, Borrador) y de nivel de riesgo.
+
+![Figura A.4. Lista de expedientes](img/a4.png)
+
+**Figura A.5.** Detalle de un expediente con sus pestañas (Detalle, Documentos, Trazabilidad) y el botón Exportar PDF.
+
+![Figura A.5. Detalle del expediente](img/a5.png)
+
+**Figura A.6.** Exportación del expediente a PDF: el sistema genera el archivo y el navegador lo descarga con el número de expediente como nombre.
+
+![Figura A.6. Descarga del PDF del expediente](img/a6.png)
+
+**Figura A.7.** Búsqueda PEP con coincidencia exacta por la cédula 8-702-3355: el sistema encuentra al funcionario con score de similitud 100.
+
+![Figura A.7. Búsqueda PEP](img/a7.png)
+
+**Figura A.8.** Grafo de relaciones: el cliente PEP (nodo naranja) aparece como accionista de dos sociedades distintas. Arriba, la leyenda de colores.
+
+![Figura A.8. Grafo de relaciones](img/a8.png)
+
+**Figura A.9.** Panel de alertas activas desplegado desde la campana de la barra superior.
+
+![Figura A.9. Panel de alertas](img/a9.png)
+
+**Figura A.10.** Aprobación de un expediente: el sistema exige un comentario de justificación antes de registrar la decisión.
+
+![Figura A.10. Aprobación con comentario obligatorio](img/a10.png)
 
 ### Anexo B. Reportes de pruebas ejecutadas y resultados
 
@@ -392,9 +420,17 @@ Estas 25 pruebas se ejecutan en GitHub Actions contra el sistema completo: el wo
 
 Nota sobre BET-03 (listas OFAC/ONU/UE): no aplica, documentado como exclusión por falta de APIs públicas gratuitas.
 
-- **B.3** `<INSERTAR IMAGEN: terminal con el resultado de pytest (91 passed)>`
-- **B.4** `<INSERTAR IMAGEN: resultado de Playwright (25 passed) en local o en GitHub Actions>`
-- **B.5** `<INSERTAR IMAGEN: workflow e2e-tests en verde en la pestaña Actions>`
+**Figura B.3.** Resultado de la suite de backend: pytest con las 91 pruebas aprobadas.
+
+![Figura B.3. Resultado de pytest](img/b3.png)
+
+**Figura B.4.** Resultado de la suite de extremo a extremo: Playwright con las 25 pruebas aprobadas.
+
+![Figura B.4. Resultado de Playwright](img/b4.png)
+
+**Figura B.5.** Workflow de pruebas E2E ejecutándose en verde en GitHub Actions.
+
+![Figura B.5. Workflow E2E en GitHub Actions](img/b5.png)
 
 ### Anexo C. Métricas aplicadas con valores reales e interpretación
 
@@ -432,17 +468,35 @@ Todas las cifras de este anexo provienen de una medición realizada el 14 de jul
 | Issues gestionados | Más de 100, con etiquetas por área y cierre con evidencia | GitHub Issues | La trazabilidad tarea-código-prueba se mantiene en la misma plataforma |
 | Requisitos del plan de pruebas ejecutados | 19 de 20 (el restante, BET-03, es una exclusión documentada) | plan-de-pruebas.md | El plan definido en mayo se completó |
 
-- **C.4** `<INSERTAR IMAGEN: dashboard de métricas generado por scripts/generate_metrics_dashboard.py>`
+**Figura C.4.** Dashboard de métricas generado automáticamente por el script del proyecto (dos vistas: indicadores generales y detalle por herramienta).
+
+![Figura C.4a. Dashboard de métricas, indicadores](img/c4a.png)
+
+![Figura C.4b. Dashboard de métricas, detalle](img/c4b.png)
 
 ### Anexo D. Evidencias de gestión y versionamiento
 
 Estas capturas evidencian que la gestión del proyecto se llevó en la misma plataforma que el código: el tablero de GitHub Projects para el estado de las tareas, los issues para el detalle de cada una, el historial de commits y Pull Requests para los cambios, y GitHub Actions para la verificación automática.
 
-- **D.1** `<INSERTAR IMAGEN: tablero de GitHub Projects con las columnas Backlog, In progress y Done>`
-- **D.2** `<INSERTAR IMAGEN: lista de issues con sus etiquetas, mostrando cerrados y abiertos>`
-- **D.3** `<INSERTAR IMAGEN: historial de commits de la rama master>`
-- **D.4** `<INSERTAR IMAGEN: Pull Requests #99, #100 y #101 con sus verificaciones en verde>`
-- **D.5** `<INSERTAR IMAGEN: pestaña Actions con los workflows backend-ci, frontend-ci, e2e-tests y metrics-report>`
+**Figura D.1.** Tablero de GitHub Projects con las columnas Backlog, In progress y Done.
+
+![Figura D.1. Tablero de GitHub Projects](img/d1.png)
+
+**Figura D.2.** Issues del repositorio con sus etiquetas por área, mostrando el trabajo cerrado con evidencia.
+
+![Figura D.2. Issues del repositorio](img/d2.png)
+
+**Figura D.3.** Historial de commits de la rama master, incluyendo los merges de los Pull Requests del cierre.
+
+![Figura D.3. Historial de commits](img/d3.png)
+
+**Figura D.4.** Pull Requests del cierre con sus verificaciones de integración continua en verde.
+
+![Figura D.4. Pull Requests](img/d4.png)
+
+**Figura D.5.** Workflows de GitHub Actions del proyecto (backend, frontend, E2E y métricas).
+
+![Figura D.5. Workflows de Actions](img/d5.png)
 
 ### Anexo E. Código relevante
 

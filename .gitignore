@@ -17,6 +17,9 @@ frontend/test-results/
 frontend/tests/report/
 frontend/playwright-report/
 
+# Artefactos locales
+/dashboard.html
+
 # IDE / OS
 .vscode/
 .idea/
