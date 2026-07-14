@@ -4,11 +4,16 @@ from jose import JWTError, jwt
 import bcrypt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.core.database import get_db
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
+
+# Rate limiting por IP (Ley 23 - proteccion de acceso al sistema)
+limiter = Limiter(key_func=get_remote_address)
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -36,6 +41,13 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     return encoded_jwt
 
 
+def create_refresh_token(data: dict) -> str:
+    to_encode = data.copy()
+    expire = datetime.utcnow() + timedelta(days=settings.refresh_token_expire_days)
+    to_encode.update({"exp": expire, "type": "refresh"})
+    return jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
+
+
 def decode_token(token: str) -> Optional[dict]:
     try:
         payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
@@ -56,7 +68,27 @@ async def get_current_user(
     payload = decode_token(token)
     if payload is None:
         raise credentials_exception
+    # Un refresh token no sirve como credencial de acceso
+    if payload.get("type") == "refresh":
+        raise credentials_exception
     user_id: str = payload.get("sub")
     if user_id is None:
         raise credentials_exception
     return {"user_id": user_id, "roles": payload.get("roles", [])}
+
+
+def require_roles(*roles_permitidos: str):
+    """RBAC (Ley 23 - principio de menor privilegio).
+
+    Devuelve una dependencia que exige alguno de los roles indicados.
+    `admin` siempre tiene acceso. Sin argumentos = solo admin.
+    """
+    async def verificar_rol(current_user: dict = Depends(get_current_user)) -> dict:
+        roles_usuario = set(current_user.get("roles", []))
+        if "admin" in roles_usuario or roles_usuario.intersection(roles_permitidos):
+            return current_user
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"Requiere rol: {', '.join(roles_permitidos) or 'admin'}"
+        )
+    return verificar_rol

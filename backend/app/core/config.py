@@ -46,6 +46,9 @@ class Settings(BaseSettings):
     # Redis (Celery / cache)
     redis_url: str = "redis://localhost:6379/0"
 
+    # Rate limiting (slowapi)
+    login_rate_limit: str = "10/minute"
+
     # CORS
     allowed_origins: str = "http://localhost:3000"
 

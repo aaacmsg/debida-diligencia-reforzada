@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Dict
 from app.core.database import get_db
-from app.core.security import get_current_user
+from app.core.security import get_current_user, require_roles
 from app.models.models import Configuracion
 
 router = APIRouter()
@@ -21,7 +21,7 @@ def listar_configuracion(
 def actualizar_configuracion(
     data: Dict[str, str],
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(require_roles())  # solo admin configura el sistema
 ):
     for clave, valor in data.items():
         config = db.query(Configuracion).filter(Configuracion.clave == clave).first()

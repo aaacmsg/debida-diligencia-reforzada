@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from datetime import datetime
 from app.core.database import get_db
-from app.core.security import get_current_user
+from app.core.security import get_current_user, require_roles
 from app.models.models import Expediente, Cliente, EventoAuditoria, EstadoExpediente
 from app.schemas.schemas import ExpedienteCreate, ExpedienteUpdate, ExpedienteResponse, ExpedienteDetalleResponse
 import uuid
@@ -117,7 +117,7 @@ def aprobar_expediente(
     expediente_id: int,
     comentario: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(require_roles("alta_gerencia"))
 ):
     expediente = db.query(Expediente).filter(Expediente.id == expediente_id).first()
     if not expediente:
@@ -156,7 +156,7 @@ def rechazar_expediente(
     expediente_id: int,
     comentario: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(require_roles("alta_gerencia"))
 ):
     if not comentario:
         raise HTTPException(status_code=400, detail="Comentario obligatorio para rechazo")

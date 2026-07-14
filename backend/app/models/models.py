@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, Float, Boolean, DateTime, Text, Enum, ForeignKey, JSON
+from sqlalchemy import Column, String, Integer, Float, Boolean, DateTime, Text, Enum, ForeignKey, JSON, event
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.core.database import Base
@@ -213,3 +213,21 @@ class Alerta(Base):
     created_at = Column(DateTime, server_default=func.now(), index=True)
 
     expediente = relationship("Expediente", back_populates="alertas")
+
+
+class AuditoriaInmutableError(Exception):
+    """Los eventos de auditoria son WORM (Ley 23 Art. 21): solo escritura, nunca edicion/borrado."""
+
+
+@event.listens_for(EventoAuditoria, "before_update")
+def _bloquear_update_auditoria(mapper, connection, target):
+    raise AuditoriaInmutableError(
+        f"Evento de auditoria {target.id} es inmutable (WORM): no se permite modificar"
+    )
+
+
+@event.listens_for(EventoAuditoria, "before_delete")
+def _bloquear_delete_auditoria(mapper, connection, target):
+    raise AuditoriaInmutableError(
+        f"Evento de auditoria {target.id} es inmutable (WORM): no se permite eliminar"
+    )
