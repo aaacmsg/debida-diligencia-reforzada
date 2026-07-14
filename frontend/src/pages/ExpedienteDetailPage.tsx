@@ -398,7 +398,7 @@ export default function ExpedienteDetailPage() {
           ) : (
             <div className="space-y-4">
               {eventos.map((evento) => (
-                <div key={evento.id} className="flex items-start space-x-3">
+                <div key={evento.id} data-testid="evento-auditoria" className="flex items-start space-x-3">
                   <div className="p-2 bg-gray-100 rounded-full">
                     <Clock className="w-4 h-4 text-gray-500" />
                   </div>

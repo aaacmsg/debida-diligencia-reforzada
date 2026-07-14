@@ -6,20 +6,19 @@ test.describe('ALF-05: Integridad del log de auditoria', () => {
     await page.goto('/expedientes');
 
     const expedienteLink = page.locator('a:has-text("EDD-")').first();
-    if (await expedienteLink.isVisible()) {
-      await expedienteLink.click();
-      await page.waitForURL(/\/expedientes\/\d+/);
+    await expect(expedienteLink).toBeVisible({ timeout: 10000 });
+    await expedienteLink.click();
+    await page.waitForURL(/\/expedientes\/\d+/);
 
-      await page.click('button:has-text("Trazabilidad")');
+    await page.click('button:has-text("Trazabilidad")');
 
-      await expect(page.locator('text=CREAR_CLIENTE').first()).toBeVisible();
-      // El evento registra el usuario que lo genero (seed: oficial; suite: admin)
-      await expect(page.locator('text=/admin|oficial/').first()).toBeVisible();
+    await expect(page.locator('text=CREAR_CLIENTE').first()).toBeVisible();
+    // El evento registra el usuario que lo genero (seed: oficial; suite: admin)
+    await expect(page.locator('text=/admin|oficial/').first()).toBeVisible();
 
-      const eventRows = page.locator('table tbody tr');
-      const count = await eventRows.count();
-      expect(count).toBeGreaterThanOrEqual(1);
-    }
+    // La trazabilidad se renderiza como timeline de divs, no como tabla
+    const eventos = page.locator('[data-testid="evento-auditoria"]');
+    expect(await eventos.count()).toBeGreaterThanOrEqual(1);
   });
 });
 
