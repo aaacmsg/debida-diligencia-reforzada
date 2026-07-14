@@ -14,11 +14,11 @@
 
 | Fase | Contenido | Issues | Estado |
 |------|-----------|--------|--------|
-| **A — Datos de demo (seed)** | Script de seed: usuarios por rol, clientes (PEP y no PEP) relacionados entre sí, expedientes, alertas — desbloquea el grafo y la demo del video. Incluye fix de `config.py` (REDIS_URL/ALLOWED_ORIGINS rompían el arranque) | [PR #99](https://github.com/aaacmsg/debida-diligencia-reforzada/pull/99) | 🟡 PR abierto — verificado E2E |
-| **B — Seguridad P0** | RBAC en endpoints + rate limiting + auditoría WORM. Incluye fix de enums del dashboard (tarjetas en 0) | [PR #100](https://github.com/aaacmsg/debida-diligencia-reforzada/pull/100) (Closes #89, #90, #91) | 🟡 PR abierto — verificado E2E + UI |
-| **C — JWT refresh** | Refresh tokens con rotación + interceptor axios que renueva y reintenta | [PR #100](https://github.com/aaacmsg/debida-diligencia-reforzada/pull/100) (Closes #97) | 🟡 PR abierto |
-| **D — Export PDF expediente** | pdf_service (fpdf2) + endpoint + botón en UI + evento auditoría | [PR #101](https://github.com/aaacmsg/debida-diligencia-reforzada/pull/101) (Closes #92, #32) | 🟡 PR abierto — 25/25 E2E |
-| **E — E2E en CI** | Workflow e2e-tests.yml + fixture auth real + specs corregidos + 4 defectos reales corregidos (NaN submit, 422 payload, toast crash, a11y #34) | [PR #101](https://github.com/aaacmsg/debida-diligencia-reforzada/pull/101) (Closes #93) | 🟡 PR abierto — 25/25 E2E |
+| **A — Datos de demo (seed)** | Script de seed: usuarios por rol, clientes (PEP y no PEP) relacionados entre sí, expedientes, alertas. Incluye fix de `config.py` (REDIS_URL/ALLOWED_ORIGINS rompían el arranque) | [PR #99](https://github.com/aaacmsg/debida-diligencia-reforzada/pull/99) | ✅ Mergeado |
+| **B — Seguridad P0** | RBAC en endpoints + rate limiting + auditoría WORM. Incluye fix de enums del dashboard | [PR #100](https://github.com/aaacmsg/debida-diligencia-reforzada/pull/100) (#89, #90, #91) | ✅ Mergeado |
+| **C — JWT refresh** | Refresh tokens con rotación + interceptor axios que renueva y reintenta | [PR #100](https://github.com/aaacmsg/debida-diligencia-reforzada/pull/100) (#97) | ✅ Mergeado |
+| **D — Export PDF expediente** | pdf_service (fpdf2) + endpoint + botón en UI + evento auditoría | [PR #101](https://github.com/aaacmsg/debida-diligencia-reforzada/pull/101) (#92, #32) | ✅ Mergeado — CI verde |
+| **E — E2E en CI** | Workflow e2e-tests.yml + fixture auth real + specs corregidos + 4 defectos reales corregidos | [PR #101](https://github.com/aaacmsg/debida-diligencia-reforzada/pull/101) (#93) | ✅ Mergeado — 25/25 en Actions |
 | Futuro documentado (no implementar) | Celery CSVs, email, admin UI, feature flags | #94, #95, #96, #98 | ⚪ Trabajo futuro |
 
 ---
