@@ -15,7 +15,13 @@ docker-compose exec backend python scripts/seed_demo.py
 3. Espera a que el backend responda: abre http://localhost:8000/health y debe decir `{"status":"healthy"}`.
 4. El frontend queda en **http://localhost:3000**.
 
-> **Ojo (máquina de César):** el puerto 3000 lo ocupa otra app. En ese caso el contenedor del frontend no arranca; levanta el frontend aparte con `cd frontend && npx vite --port 3002` y usa **http://127.0.0.1:3002** en todos los pasos (con `127.0.0.1`, no `localhost`).
+> **Si Docker dice "ports are not available: 3000"** (otro programa usa ese puerto), levanta todo con un puerto alternativo y usa esa dirección en todos los pasos de esta guía:
+>
+> ```bash
+> FRONTEND_PORT=3002 docker-compose up --build -d
+> ```
+>
+> y entra por **http://127.0.0.1:3002** (con `127.0.0.1`, no `localhost`).
 
 Usuarios: `admin/admin123`, `oficial/oficial123`, `gerencia/gerencia123`.
 
