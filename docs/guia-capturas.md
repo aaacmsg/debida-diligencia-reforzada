@@ -121,15 +121,16 @@ Opción local:
 ## Anexo C. Métricas
 
 ### C.4 Dashboard de métricas
-1. En una terminal:
+1. Con el sistema levantado, en PowerShell **desde la raíz del proyecto** (este comando monta el repositorio completo para que se midan backend y frontend, y se conecta a la base de datos para que corran las 91 pruebas):
 
-```bash
-docker-compose exec backend python scripts/generate_metrics_dashboard.py
-docker cp proyecto_diligencia_reforzada-backend-1:/app/metrics/dashboard.html ./dashboard.html
+```powershell
+docker run --rm -v "${PWD}:/repo" -w /repo/backend --network proyecto_diligencia_reforzada_default -e DATABASE_URL="postgresql://postgres:postgres@db:5432/diligencia_db" proyecto_diligencia_reforzada-backend python scripts/generate_metrics_dashboard.py
 ```
 
-2. Abre `dashboard.html` en el navegador y captura la página.
-3. Alternativa: en GitHub → Actions → workflow **Metrics Report** → corrida más reciente → descarga el artifact y abre el HTML.
+2. Abre `backend/metrics/dashboard.html` en el navegador y captura: primero las tarjetas de arriba (c4a) y luego las tres tablas de métricas (c4b).
+3. Verifica antes de capturar: cobertura 70%, 91/91 pruebas, frontend con miles de líneas (no cero) e incidencias de estilo 35. Si algo sale en "N/D", el comando no se corrió desde la raíz o la base de datos no estaba arriba.
+
+> No uses `docker-compose exec backend ...` para esta captura: dentro de ese contenedor no existe la carpeta del frontend y el dashboard lo marcaría como no disponible.
 
 ---
 
