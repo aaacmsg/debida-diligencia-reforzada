@@ -15,8 +15,8 @@
 | Fase | Contenido | Issues | Estado |
 |------|-----------|--------|--------|
 | **A — Datos de demo (seed)** | Script de seed: usuarios por rol, clientes (PEP y no PEP) relacionados entre sí, expedientes, alertas — desbloquea el grafo y la demo del video. Incluye fix de `config.py` (REDIS_URL/ALLOWED_ORIGINS rompían el arranque) | [PR #99](https://github.com/aaacmsg/debida-diligencia-reforzada/pull/99) | 🟡 PR abierto — verificado E2E |
-| **B — Seguridad P0** | RBAC en endpoints + rate limiting + auditoría WORM | #89, #90, #91 | 🔴 Siguiente |
-| **C — JWT refresh** | Expiración y refresh de tokens | #97 | ⚪ Opcional |
+| **B — Seguridad P0** | RBAC en endpoints + rate limiting + auditoría WORM. Incluye fix de enums del dashboard (tarjetas en 0) | [PR #100](https://github.com/aaacmsg/debida-diligencia-reforzada/pull/100) (Closes #89, #90, #91) | 🟡 PR abierto — verificado E2E + UI |
+| **C — JWT refresh** | Refresh tokens con rotación + interceptor axios que renueva y reintenta | [PR #100](https://github.com/aaacmsg/debida-diligencia-reforzada/pull/100) (Closes #97) | 🟡 PR abierto |
 | **D — Export PDF expediente** | Exportar expediente individual a PDF | #92 | ⚪ Opcional |
 | **E — E2E en CI** | Playwright en GitHub Actions con backend+DB de servicio | #93 | ⚪ Opcional |
 | Futuro documentado (no implementar) | Celery CSVs, email, admin UI, feature flags | #94, #95, #96, #98 | ⚪ Trabajo futuro |
