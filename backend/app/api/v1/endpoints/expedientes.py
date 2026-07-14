@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.responses import Response
 from sqlalchemy.orm import Session
 from typing import List
 from datetime import datetime
@@ -6,6 +7,7 @@ from app.core.database import get_db
 from app.core.security import get_current_user, require_roles
 from app.models.models import Expediente, Cliente, EventoAuditoria, EstadoExpediente
 from app.schemas.schemas import ExpedienteCreate, ExpedienteUpdate, ExpedienteResponse, ExpedienteDetalleResponse
+from app.services.pdf_service import generar_pdf_expediente
 import uuid
 
 router = APIRouter()
@@ -47,6 +49,40 @@ def obtener_expediente(
     if not expediente:
         raise HTTPException(status_code=404, detail="Expediente no encontrado")
     return expediente
+
+
+@router.get("/{expediente_id}/pdf")
+def exportar_expediente_pdf(
+    expediente_id: int,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    expediente = db.query(Expediente).filter(Expediente.id == expediente_id).first()
+    if not expediente:
+        raise HTTPException(status_code=404, detail="Expediente no encontrado")
+
+    pdf_bytes = generar_pdf_expediente(
+        expediente=expediente,
+        cliente=expediente.cliente,
+        documentos=expediente.documentos,
+        eventos=expediente.eventos,
+    )
+
+    db.add(EventoAuditoria(
+        expediente_id=expediente.id,
+        usuario=current_user.get("user_id", "system"),
+        accion="EXPORTAR_PDF",
+        detalles={"numero_expediente": expediente.numero_expediente}
+    ))
+    db.commit()
+
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f'attachment; filename="{expediente.numero_expediente}.pdf"'
+        }
+    )
 
 
 @router.post("/", response_model=ExpedienteResponse, status_code=status.HTTP_201_CREATED)

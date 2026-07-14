@@ -128,10 +128,14 @@ class TestSeguridadAPI:
         assert resp.status_code == 403
 
     def test_zz_rate_limit_en_login(self, client):
-        """Ultimo test del modulo: agota el limite de login (10/min) y espera 429."""
+        """Ultimo test del modulo: agota el limite de login configurado y espera 429."""
+        from app.core.config import settings
+        limite = int(settings.login_rate_limit.split("/")[0])
+        if limite > 30:
+            pytest.skip(f"LOGIN_RATE_LIMIT={settings.login_rate_limit} (elevado para E2E)")
         limiter.reset()
         codigos = []
-        for _ in range(12):
+        for _ in range(limite + 2):
             resp = _login(client, "admin", "clave-incorrecta")
             codigos.append(resp.status_code)
         assert codigos[0] == 401

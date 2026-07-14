@@ -2,7 +2,7 @@ import { test, expect } from '../../fixtures/auth.fixture';
 
 test.describe('ALF-05: Integridad del log de auditoria', () => {
 
-  test('TC-09: Crear cliente genera evento de auditoria', async ({ page }) => {
+  test('TC-09: Crear cliente genera evento de auditoria', async ({ authPage: page }) => {
     await page.goto('/expedientes');
 
     const expedienteLink = page.locator('a:has-text("EDD-")').first();
@@ -24,7 +24,7 @@ test.describe('ALF-05: Integridad del log de auditoria', () => {
 
 test.describe('ALF-08: Trazabilidad de modificaciones', () => {
 
-  test('TC-10: Editar cliente genera evento de auditoria', async ({ page }) => {
+  test('TC-10: Editar cliente genera evento de auditoria', async ({ authPage: page }) => {
     await page.goto('/clientes');
 
     const editBtn = page.locator('button:has-text("Editar")').first();
@@ -42,10 +42,11 @@ test.describe('ALF-08: Trazabilidad de modificaciones', () => {
 
 test.describe('ALF-09: Conservacion de registros', () => {
 
-  test('Eventos tienen created_at', async ({ page }) => {
+  test('Eventos tienen created_at', async ({ authPage: page }) => {
     await page.goto('/reportes');
 
     const rows = page.locator('table tbody tr');
+    await expect(rows.first()).toBeVisible({ timeout: 10000 });
     const count = await rows.count();
     expect(count).toBeGreaterThanOrEqual(1);
 

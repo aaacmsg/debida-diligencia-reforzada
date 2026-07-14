@@ -58,6 +58,20 @@ export const expedienteService = {
     return response.data;
   },
 
+  async exportarPdf(id: number, numeroExpediente: string): Promise<void> {
+    const response = await api.get<Blob>(`/expedientes/${id}/pdf`, {
+      responseType: 'blob',
+    });
+    const url = window.URL.createObjectURL(response.data);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${numeroExpediente}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  },
+
   async getAuditoria(id: number): Promise<EventoAuditoria[]> {
     const response = await api.get<EventoAuditoria[]>(`/reportes/auditoria`, {
       params: { expediente_id: id },

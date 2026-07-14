@@ -2,7 +2,7 @@ import { test, expect } from '../../fixtures/auth.fixture';
 
 test.describe('UX-02: Activacion automatica seccion PEP', () => {
 
-  test('TC-13: Campos PEP aparecen al marcar es_pep=true', async ({ page }) => {
+  test('TC-13: Campos PEP aparecen al marcar es_pep=true', async ({ authPage: page }) => {
     await page.goto('/clientes');
     await page.click('button:has-text("Nuevo Cliente")');
 
@@ -18,7 +18,7 @@ test.describe('UX-02: Activacion automatica seccion PEP', () => {
     await expect(amberBg).toBeVisible();
   });
 
-  test('TC-14: Campos PEP se ocultan al desmarcar es_pep', async ({ page }) => {
+  test('TC-14: Campos PEP se ocultan al desmarcar es_pep', async ({ authPage: page }) => {
     await page.goto('/clientes');
     await page.click('button:has-text("Nuevo Cliente")');
 
@@ -32,7 +32,7 @@ test.describe('UX-02: Activacion automatica seccion PEP', () => {
 
 test.describe('UX-03: Consistencia visual', () => {
 
-  test('Colores de riesgo consistentes en todas las paginas', async ({ page }) => {
+  test('Colores de riesgo consistentes en todas las paginas', async ({ authPage: page }) => {
     await page.goto('/clientes');
     await page.goto('/expedientes');
     await page.goto('/dashboard');

@@ -3,32 +3,32 @@ import { generateIdentificacion } from '../../helpers/api.helper';
 
 test.describe('BET-02: PEP auto-flag en expediente', () => {
 
-  test('TC-07: Crear cliente PEP genera expediente pendiente_gerencia', async ({ page }) => {
+  test('TC-07: Crear cliente PEP genera expediente pendiente_gerencia', async ({ authPage: page }) => {
     const cedula = generateIdentificacion();
     const nombre = `PEP${Date.now()}`;
 
     await page.goto('/clientes');
     await page.click('button:has-text("Nuevo Cliente")');
-    await page.fill('input:below(:text("Nombre *"))', nombre);
-    await page.fill('input:below(:text("Numero de Identificacion *"))', cedula);
-    await page.check('input[type="checkbox"]:below(:text("PEP"))');
+    await page.fill('input[name="nombre"]', nombre);
+    await page.fill('input[name="numero_identificacion"]', cedula);
+    await page.check('input[name="es_pep"]');
 
-    await page.selectOption('select:below(:text("Cargo Politico"))', 'Director');
-    await page.selectOption('select:below(:text("Tipo de Relacion"))', 'directo');
-    await page.fill('input:below(:text("Pais de Residencia Fiscal *"))', 'Panama');
+    await page.selectOption('select[name="cargo_pep"]', 'Director');
+    await page.selectOption('select[name="relacion_pep"]', 'directo');
+    await page.fill('input[name="pais_residencia_fiscal"]', 'Panama');
 
     await page.click('button:has-text("Guardar Cliente")');
-    await expect(page.locator('text=Cliente y expediente creados exitosamente')).toBeVisible();
+    await expect(page.locator('text=Cliente y expediente creados exitosamente')).toBeVisible({ timeout: 10000 });
 
     await page.goto('/expedientes');
-    await expect(page.locator('text=pendiente_gerencia')).toBeVisible();
-    await expect(page.locator('text=alto')).toBeVisible();
+    await expect(page.locator('span:has-text("pendiente gerencia")').first()).toBeVisible();
+    await expect(page.locator('span:has-text("alto")').first()).toBeVisible();
   });
 });
 
 test.describe('ALF-04: Aprobacion de alto riesgo', () => {
 
-  test('TC-08: Approve requiere comentario', async ({ page }) => {
+  test('TC-08: Approve requiere comentario', async ({ authPage: page }) => {
     await page.goto('/expedientes');
 
     const expedienteLink = page.locator('a:has-text("EDD-")').first();

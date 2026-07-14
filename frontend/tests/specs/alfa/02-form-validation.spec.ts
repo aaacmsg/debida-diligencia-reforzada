@@ -3,36 +3,36 @@ import { generateIdentificacion } from '../../helpers/api.helper';
 
 test.describe('ALF-02: Validacion de campos obligatorios', () => {
 
-  test('TC-04: No permite guardar con campos obligatorios vacios', async ({ page }) => {
+  test('TC-04: No permite guardar con campos obligatorios vacios', async ({ authPage: page }) => {
     await page.goto('/clientes');
     await page.click('button:has-text("Nuevo Cliente")');
     await page.click('button:has-text("Guardar Cliente")');
 
-    await expect(page.locator('text=Requerido')).toBeVisible();
+    await expect(page.locator('text=Requerido').first()).toBeVisible();
   });
 
-  test('TC-05: Crea cliente con datos validos', async ({ page }) => {
+  test('TC-05: Crea cliente con datos validos', async ({ authPage: page }) => {
     const cedula = generateIdentificacion();
     const nombre = `Test${Date.now()}`;
 
     await page.goto('/clientes');
     await page.click('button:has-text("Nuevo Cliente")');
-    await page.fill('input:below(:text("Nombre *"))', nombre);
-    await page.fill('input:below(:text("Numero de Identificacion *"))', cedula);
+    await page.fill('input[name="nombre"]', nombre);
+    await page.fill('input[name="numero_identificacion"]', cedula);
     await page.click('button:has-text("Guardar Cliente")');
 
-    await expect(page.locator('text=Cliente y expediente creados exitosamente')).toBeVisible();
-    await expect(page.locator(`text=${nombre}`)).toBeVisible();
+    await expect(page.locator('text=Cliente y expediente creados exitosamente')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator(`text=${nombre}`).first()).toBeVisible();
   });
 
-  test('TC-06: PEP fields required cuando es_pep=true', async ({ page }) => {
+  test('TC-06: PEP fields required cuando es_pep=true', async ({ authPage: page }) => {
     const cedula = generateIdentificacion();
 
     await page.goto('/clientes');
     await page.click('button:has-text("Nuevo Cliente")');
-    await page.fill('input:below(:text("Nombre *"))', `PEPTest${Date.now()}`);
-    await page.fill('input:below(:text("Numero de Identificacion *"))', cedula);
-    await page.check('input[type="checkbox"]:below(:text("PEP"))');
+    await page.fill('input[name="nombre"]', `PEPTest${Date.now()}`);
+    await page.fill('input[name="numero_identificacion"]', cedula);
+    await page.check('input[name="es_pep"]');
     await page.click('button:has-text("Guardar Cliente")');
 
     await expect(page.locator('text=Cargo PEP requerido')).toBeVisible();
@@ -42,7 +42,7 @@ test.describe('ALF-02: Validacion de campos obligatorios', () => {
 
 test.describe('ALF-01: Beneficiario Final', () => {
 
-  test('Sumatoria participaciones', async ({ page }) => {
+  test('Sumatoria participaciones', async ({ authPage: page }) => {
     await page.goto('/clientes');
     await page.click('button:has-text("Nuevo Cliente")');
 

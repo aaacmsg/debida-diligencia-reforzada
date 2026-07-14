@@ -10,6 +10,7 @@ services:
       - SECRET_KEY=diligencia-reforsada-secret-key-2026-change-in-production
       - REDIS_URL=redis://redis:6379/0
       - ALLOWED_ORIGINS=http://localhost:3000
+      - LOGIN_RATE_LIMIT=${LOGIN_RATE_LIMIT:-10/minute}
     depends_on:
       db:
         condition: service_healthy

@@ -2,7 +2,7 @@ import { test, expect } from '../../fixtures/auth.fixture';
 
 test.describe('UX-07: Accesibilidad WCAG', () => {
 
-  test('TC-20: Elementos interactivos tienen aria-labels o texto visible', async ({ page }) => {
+  test('TC-20: Elementos interactivos tienen aria-labels o texto visible', async ({ authPage: page }) => {
     const pages = ['/dashboard', '/clientes', '/expedientes', '/pep', '/reportes', '/grafo'];
     for (const route of pages) {
       await page.goto(route);
@@ -32,7 +32,7 @@ test.describe('UX-07: Accesibilidad WCAG', () => {
     }
   });
 
-  test('Contraste de colores en textos principales', async ({ page }) => {
+  test('Contraste de colores en textos principales', async ({ authPage: page }) => {
     await page.goto('/dashboard');
 
     const textElements = page.locator('.text-gray-900, .text-gray-700, .text-primary-600');

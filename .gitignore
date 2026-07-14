@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.coverage
+backend/venv/
+backend/.env
+backend/uploads/
+backend/metrics/coverage/
+
+# Node
+node_modules/
+frontend/dist/
+
+# Playwright (artefactos de ejecucion)
+frontend/test-results/
+frontend/tests/report/
+frontend/playwright-report/
+
+# IDE / OS
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
