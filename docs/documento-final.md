@@ -4,7 +4,7 @@
 
 ---
 
-# Proyecto Semestral — Documento Final
+# Proyecto Semestral. Documento Final
 
 # Sistema de Diligencia Debida Reforzada (EDD)
 
@@ -17,7 +17,7 @@
 | **Materia** | Ingeniería de Software IV |
 | **Profesora** | María Mosquera |
 | **Salón** | 1GS242 |
-| **Integrantes** | César Santiago · Roberto López · Jean Suárez |
+| **Integrantes** | César Santiago, Jean Suárez, Roberto López |
 | **Repositorio** | https://github.com/aaacmsg/debida-diligencia-reforzada |
 | **Tablero** | https://github.com/users/aaacmsg/projects/2 |
 | **Fecha de entrega** | Julio de 2026 |
@@ -26,49 +26,54 @@
 
 ## Índice
 
-1. [Introducción y descripción del proyecto](#1-introducción-y-descripción-del-proyecto)
-2. [Retrospectiva del equipo](#2-retrospectiva-del-equipo)
+1. Introducción y descripción del proyecto
+2. Retrospectiva del equipo
    - 2.1 Problemas enfrentados
    - 2.2 Lecciones aprendidas
    - 2.3 Ajustes aplicados al proceso
    - 2.4 Responsabilidades individuales y colectivas
-3. [Adecuaciones del Parcial 2](#3-adecuaciones-del-parcial-2)
+3. Adecuaciones del Parcial 2
    - 3.1 Funcionalidades ajustadas y nuevas
    - 3.2 Mejoras implementadas
-   - 3.3 Métricas aplicadas (ISTQB – TMMi – TQM)
+   - 3.3 Métricas aplicadas (ISTQB, TMMi, TQM)
    - 3.4 Defectos corregidos
    - 3.5 Decisiones técnicas y su justificación
-4. [Versionamiento](#4-versionamiento)
+4. Versionamiento
    - 4.1 Historial de versiones del documento
    - 4.2 Control de versiones del software (Git)
    - 4.3 Flujo de trabajo con Pull Requests
-5. [Conclusiones](#5-conclusiones)
-   - 5.1 Conclusiones individuales
+5. Conclusiones
+   - 5.1 Conclusiones y reflexiones individuales
    - 5.2 Conclusión grupal sobre la calidad del producto
    - 5.3 Evaluación del proceso colaborativo
    - 5.4 Recomendaciones para futuras iteraciones
-6. [Referencias normativas y técnicas](#6-referencias-normativas-y-técnicas)
-7. [Anexos — Evidencias](#7-anexos--evidencias)
+6. Referencias
+7. Anexos
+   - Anexo A: capturas del sistema
+   - Anexo B: reportes de pruebas ejecutadas y resultados
+   - Anexo C: métricas aplicadas con valores reales e interpretación
+   - Anexo D: evidencias de gestión y versionamiento
+   - Anexo E: código relevante
 
 ---
 
 ## 1. Introducción y descripción del proyecto
 
-El **Sistema de Diligencia Debida Reforzada (EDD)** es una aplicación web para el cumplimiento de las obligaciones de prevención de blanqueo de capitales y financiamiento del terrorismo (AML/CFT) en Panamá, construida sobre el marco normativo de la **Ley 23 de 2015**, la **Ley 254 de 2021** y la **Resolución SBP-RG-PSO-R-2025-00671** de la Superintendencia de Bancos, incorporando las Recomendaciones 10, 12, 19 y 24 del GAFI.
+El Sistema de Diligencia Debida Reforzada (EDD) es una aplicación web para el cumplimiento de las obligaciones de prevención de blanqueo de capitales y financiamiento del terrorismo (AML/CFT) en Panamá. Se construyó sobre el marco normativo de la Ley 23 de 2015, la Ley 254 de 2021 y la Resolución SBP-RG-PSO-R-2025-00671 de la Superintendencia de Bancos, tomando como referencia las Recomendaciones 10, 12, 19 y 24 del GAFI.
 
-El sistema implementa el ciclo completo de diligencia debida bajo el **Enfoque Basado en Riesgo (EBR)**:
+Funcionalidades principales:
 
-- **Formulario EDD de 7 módulos** (identificación, información financiera, beneficiario final, perfil de riesgo, documentación, aprobación y auditoría) con validación en tiempo real.
-- **Cálculo automático del nivel de riesgo** con fórmula ponderada de 5 variables: `Score = País×0.25 + Cargo×0.30 + Sector×0.15 + Vínculos×0.20 + OrigenFondos×0.10`, con clasificación bajo (0–35), medio (36–65) y alto (66–100).
-- **Detección de Personas Expuestas Políticamente (PEP)** mediante búsqueda difusa (RapidFuzz, umbral 85%) contra datos oficiales de `datosabiertos.gob.pa` (API CKAN) y la ANTAI. Regla especial: todo cliente PEP fuerza riesgo alto y aprobación obligatoria de Alta Gerencia.
-- **Gestión de expedientes** con flujo de estados (borrador → pendiente revisión → pendiente gerencia → aprobado/rechazado), comentario de justificación obligatorio y exportación a PDF.
-- **Grafo interactivo de relaciones** que revela vínculos societarios entre clientes, beneficiarios finales y documentos.
-- **Trazabilidad inmutable (WORM)**: todo evento queda registrado con usuario, fecha UTC e IP, y no puede modificarse ni eliminarse (Ley 23, Art. 21).
-- **Seguridad**: autenticación JWT con refresh tokens, control de acceso por roles (RBAC), rate limiting por IP y documentos con hash SHA-256.
+- Formulario EDD de 7 módulos (identificación, información financiera, beneficiario final, perfil de riesgo, documentación, aprobación y auditoría) con validación en tiempo real.
+- Cálculo automático del nivel de riesgo con una fórmula ponderada de 5 variables: País (25%), Cargo PEP (30%), Sector económico (15%), Vínculos (20%) y Origen de fondos (10%). La clasificación es: bajo (0 a 35), medio (36 a 65) y alto (66 a 100).
+- Detección de Personas Expuestas Políticamente (PEP) mediante búsqueda difusa (RapidFuzz, umbral 85%) contra datos oficiales descargados de datosabiertos.gob.pa vía API CKAN. Todo cliente PEP queda en riesgo alto y requiere aprobación de Alta Gerencia, sin importar el score calculado.
+- Gestión de expedientes con flujo de estados (borrador, pendiente de revisión, pendiente de gerencia, aprobado, rechazado), comentario de justificación obligatorio para aprobar o rechazar, y exportación del expediente a PDF.
+- Grafo interactivo que muestra los vínculos entre clientes, beneficiarios finales y documentos.
+- Trazabilidad inmutable (WORM): cada evento queda registrado con usuario, fecha UTC y dirección IP, y no puede modificarse ni eliminarse (Ley 23, Art. 21).
+- Seguridad: autenticación JWT con refresh de tokens, control de acceso por roles (RBAC), límite de intentos de login por IP y documentos con hash SHA-256.
 
-**Stack tecnológico:** FastAPI (Python 3.11) + SQLAlchemy 2.0 + PostgreSQL 15 + Redis 7 en el backend; React 18 + TypeScript + Vite + TailwindCSS en el frontend; Docker Compose para orquestación; GitHub Actions para integración continua (3 workflows de CI + 1 de E2E); pytest (91 pruebas) y Playwright (25 pruebas E2E) para verificación.
+Tecnologías: FastAPI (Python 3.11), SQLAlchemy 2.0 y PostgreSQL 15 en el backend; React 18 con TypeScript, Vite y TailwindCSS en el frontend; Redis 7; Docker Compose para la ejecución; GitHub Actions para integración continua; pytest y Playwright para las pruebas.
 
-**Exclusiones documentadas:** las consultas a listas restrictivas OFAC/ONU/UE no se implementaron por no existir APIs públicas gratuitas; la firma digital avanzada (XAdES/PAdES) requiere proveedores comerciales. Ambas se registran como trabajo futuro.
+Exclusiones documentadas: la consulta a listas restrictivas OFAC/ONU/UE no se implementó porque no existen APIs públicas gratuitas. La firma digital avanzada requiere proveedores comerciales. Ambas quedaron registradas como trabajo futuro en el PRD.
 
 ---
 
@@ -78,151 +83,128 @@ El sistema implementa el ciclo completo de diligencia debida bajo el **Enfoque B
 
 | # | Problema | Impacto | Resolución |
 |---|----------|---------|------------|
-| 1 | **Python 3.14 local incompatible con SQLAlchemy 2.0.25** | Los tests fallaban en las máquinas de desarrollo | Actualización a SQLAlchemy 2.0.51 con wheels cp314 |
-| 2 | **Alembic no leía `DATABASE_URL` del entorno en CI** | GitHub Actions fallaba al ejecutar migraciones | `env.py` sobrescribe `sqlalchemy.url` desde la variable de entorno |
-| 3 | **Workflows de CI no se disparaban** | Sin integración continua durante días | El repositorio usa rama `master` y los triggers apuntaban a `main`; se corrigieron |
-| 4 | **UnicodeEncodeError en Windows** al generar el dashboard de métricas con emojis | Script de métricas inutilizable en Windows | `encoding="utf-8"` explícito en la escritura de archivos |
-| 5 | **Grafo de relaciones sin datos reales** | Imposible demostrar la funcionalidad estrella | Se construyó un script de seed idempotente con 8 clientes interrelacionados (PR #99) |
-| 6 | **El backend no arrancaba con la configuración de docker-compose**: `Settings` de pydantic rechazaba `REDIS_URL` y `ALLOWED_ORIGINS` | Bloqueo total del despliegue local | Se agregaron los campos faltantes con defaults y `extra="ignore"` (PR #99) |
-| 7 | **17 de las 25 pruebas E2E corrían sin autenticación**: los specs importaban el fixture de login pero nunca lo usaban | La suite E2E nunca había pasado completa | Fixture `authPage` reescrito con login por API e inyección de tokens (PR #101) |
-| 8 | **El formulario EDD no se podía enviar** si los campos numéricos opcionales quedaban vacíos (defecto crítico, ver §3.4) | Los usuarios no podían crear clientes desde la interfaz | Corregido en PR #101; detectado precisamente por las pruebas E2E |
-| 9 | **Conflictos de puertos y de red en entornos de desarrollo** (otros servidores en los puertos 3000/3001, PostgreSQL local interceptando el puerto 5432 de Docker) | Pruebas locales apuntaban a servicios equivocados | Configuración parametrizable (`E2E_HOST`/`E2E_PORT`) y verificación por URL IPv4 explícita |
-| 10 | **Incapacidad médica de la profesora** durante la semana de presentaciones | Cambio del formato de entrega (video en lugar de presencial) | Adaptación al formato Scrum Review en video con participación de todo el equipo |
+| 1 | Python 3.14 local incompatible con SQLAlchemy 2.0.25 | Los tests fallaban en las máquinas de desarrollo | Actualización a SQLAlchemy 2.0.51 |
+| 2 | Alembic no leía `DATABASE_URL` del entorno en CI | GitHub Actions fallaba al ejecutar las migraciones | Se modificó `env.py` para tomar la URL desde la variable de entorno |
+| 3 | Los workflows de CI no se disparaban | El proyecto estuvo días sin integración continua | El repositorio usa la rama `master` y los triggers apuntaban a `main`; se corrigieron |
+| 4 | Error de codificación (UnicodeEncodeError) en Windows al generar el dashboard de métricas | El script de métricas no corría en Windows | Se especificó `encoding="utf-8"` al escribir archivos |
+| 5 | El grafo de relaciones no tenía datos reales que mostrar | No se podía demostrar la funcionalidad | Se creó un script de datos de demostración con 8 clientes interrelacionados (PR #99) |
+| 6 | El backend no arrancaba con la configuración de docker-compose porque `Settings` rechazaba las variables `REDIS_URL` y `ALLOWED_ORIGINS` | Bloqueo total del despliegue local | Se agregaron los campos faltantes a la configuración (PR #99) |
+| 7 | 17 de las 25 pruebas E2E corrían sin autenticación: los archivos de prueba importaban el fixture de login pero no lo usaban | La suite E2E nunca había pasado completa | Se reescribió el fixture para hacer login por API e inyectar los tokens (PR #101) |
+| 8 | El formulario EDD no se podía enviar si los campos numéricos opcionales quedaban vacíos (ver detalle en la sección 3.4) | Los usuarios no podían crear clientes desde la interfaz | Corregido en el PR #101; lo detectó una prueba E2E |
+| 9 | Conflictos de puertos en las máquinas de desarrollo: otros servidores ocupaban los puertos 3000 y 3001, y un PostgreSQL local interceptaba el puerto 5432 de Docker | Las pruebas locales se conectaban a servicios equivocados | Configuración parametrizable de host y puerto para las pruebas, y ejecución de los tests de integración dentro del contenedor |
+| 10 | Incapacidad médica de la profesora durante la semana de presentaciones | Cambio del formato de entrega presencial a video | El equipo se adaptó al formato Scrum Review en video |
 
 ### 2.2 Lecciones aprendidas
 
-1. **Las pruebas E2E encuentran defectos que las unitarias no ven.** El backend tenía 63 pruebas unitarias en verde y aun así el flujo principal de la aplicación (crear un cliente desde la interfaz) estaba roto. Solo al ejecutar la suite de Playwright de punta a punta se descubrió la cadena de defectos NaN → validación silenciosa → 422 del backend.
-2. **"Parece que funciona" no es evidencia.** Adoptamos como regla que ninguna tarea se marca completada sin una verificación reproducible: pytest en verde, build del frontend exitoso y, para cambios de comportamiento, una prueba manual o E2E del flujo real.
-3. **La paridad entre entornos evita días perdidos.** Las diferencias entre Python 3.14 local y 3.11 en Docker, y entre `main` y `master`, causaron fallos que no eran del código sino del entorno. Fijar versiones (`requirements.txt` con versiones exactas) y usar Docker como fuente de verdad redujo estas fricciones.
-4. **El tablero y los issues deben reflejar la realidad.** Durante un periodo los issues de verificación quedaron abiertos aunque el trabajo estaba hecho, lo que distorsionaba la medición del avance. Se estableció la disciplina de cerrar issues con evidencia (archivo, línea, prueba) en el mismo PR que completa el trabajo.
-5. **La revisión por Pull Request mejora la calidad.** Al pasar de commits directos a `master` a un flujo de una rama por fase con PR revisable, cada entrega quedó documentada con su verificación, y el CI valida cada cambio antes del merge.
+1. **Las pruebas de extremo a extremo encuentran defectos que las unitarias no ven.** El backend tenía 63 pruebas unitarias en verde y aun así el flujo principal de la aplicación (crear un cliente desde la interfaz) estaba roto. La falla solo se hizo visible al ejecutar la suite de Playwright contra el navegador y el backend reales.
+2. **"Parece que funciona" no es suficiente.** Adoptamos la regla de que ninguna tarea se marca como completada sin una verificación reproducible: pytest en verde, build del frontend exitoso y, para cambios de comportamiento, una prueba del flujo real.
+3. **Las diferencias entre entornos cuestan tiempo.** Varios de nuestros bloqueos (Python 3.14, rama `main` contra `master`, codificación en Windows) no eran errores de lógica sino de entorno. Fijar las versiones de las dependencias y usar Docker como entorno de referencia redujo estos problemas.
+4. **El tablero y los issues deben reflejar la realidad.** Durante un periodo los issues de verificación quedaron abiertos aunque el trabajo estaba hecho, y eso distorsionaba la medición del avance. Se estableció la práctica de cerrar cada issue con evidencia (archivo, prueba o commit) en el mismo Pull Request que completa el trabajo.
+5. **La revisión por Pull Request mejora la calidad.** Al dejar de hacer commits directos a `master` y pasar a un flujo de una rama por fase con Pull Request, cada entrega quedó documentada con su verificación y el CI valida los cambios antes de integrarlos.
 
 ### 2.3 Ajustes aplicados al proceso
 
-| Ajuste | Antes | Después |
-|--------|-------|---------|
-| Flujo de cambios | Commits directos a `master` | Rama por fase + Pull Request con CI obligatorio (PRs #99, #100, #101) |
-| Verificación | Manual y ocasional | 91 pruebas backend + 25 E2E ejecutadas en CI en cada PR |
-| Gestión de tareas | Listas dispersas (kanban-tasks.md, tasks-github.md) | `tasks.md` único por fases, sincronizado con GitHub Issues y Projects |
-| Continuidad del trabajo | Contexto en la memoria de cada integrante | Documentos de contexto y handoffs de sesión en `docs/` |
-| Seguridad | Autenticación básica | RBAC por roles, rate limiting, auditoría WORM y refresh tokens (Parcial 2) |
-| Datos de demostración | Base de datos vacía | Seed idempotente con escenarios de riesgo bajo/medio/alto y PEPs |
+| Aspecto | Antes | Después |
+|---------|-------|---------|
+| Flujo de cambios | Commits directos a `master` | Rama por fase y Pull Request con CI obligatorio (PRs #99, #100 y #101) |
+| Verificación | Manual y ocasional | 91 pruebas de backend y 25 E2E ejecutadas en CI en cada Pull Request |
+| Gestión de tareas | Tres listas separadas y desactualizadas | Un archivo `tasks.md` por fases, sincronizado con GitHub Issues y el tablero |
+| Continuidad del trabajo | El contexto quedaba en la memoria de cada integrante | Documentos de contexto y bitácora de sesiones en la carpeta `docs/` |
+| Seguridad | Autenticación básica con JWT | RBAC por roles, límite de intentos de login, auditoría inmutable y refresh de tokens |
+| Datos de demostración | Base de datos vacía | Seed con escenarios de riesgo bajo, medio y alto, y clientes PEP |
 
 ### 2.4 Responsabilidades individuales y colectivas
 
-> *Nota: ajustar la distribución si el equipo lo considera necesario.*
-
 | Integrante | Responsabilidades principales |
 |------------|------------------------------|
-| **César Santiago** | Administración del repositorio y del tablero GitHub Projects; integración continua (GitHub Actions); backend FastAPI (módulos de riesgo y PEP); coordinación de los Pull Requests |
-| **Roberto López** | Frontend React (formulario EDD de 7 módulos, dashboard, grafo de relaciones); pruebas E2E con Playwright; accesibilidad WCAG |
-| **Jean Suárez** | Modelo de datos y migraciones (PostgreSQL/Alembic); seguridad (JWT, RBAC, WORM); plan de pruebas y métricas de calidad |
-| **Colectivas** | Revisión cruzada de Pull Requests; retrospectivas; documento final; guion y grabación del video Scrum Review; decisiones de alcance y arquitectura |
+| César Santiago | Administración del repositorio y del tablero de GitHub Projects, integración continua, backend (módulos de riesgo y PEP), coordinación de los Pull Requests |
+| Roberto López | Frontend en React (formulario EDD, dashboard, grafo de relaciones), pruebas E2E con Playwright, accesibilidad |
+| Jean Suárez | Modelo de datos y migraciones (PostgreSQL y Alembic), seguridad (JWT, RBAC, auditoría inmutable), plan de pruebas y métricas de calidad |
+| Colectivas | Revisión cruzada de los Pull Requests, retrospectivas, documento final, guion y grabación del video, decisiones de alcance y arquitectura |
 
 ---
 
 ## 3. Adecuaciones del Parcial 2
 
-El trabajo posterior al Parcial 2 se organizó en **cinco fases**, cada una entregada como un Pull Request independiente con su verificación:
+El trabajo posterior al Parcial 2 se organizó en cinco fases. Cada fase se entregó como un Pull Request independiente, con su verificación descrita en el propio PR:
 
 | Fase | Contenido | Pull Request | Issues cerrados |
 |------|-----------|--------------|-----------------|
-| **A** | Seed de datos de demostración + corrección de arranque | [PR #99](https://github.com/aaacmsg/debida-diligencia-reforzada/pull/99) | Bloqueo del grafo sin datos; escenario del #17 |
-| **B** | Seguridad P0: RBAC, rate limiting, auditoría WORM | [PR #100](https://github.com/aaacmsg/debida-diligencia-reforzada/pull/100) | #89, #90, #91 |
-| **C** | Manejo de expiración y refresh de tokens JWT | [PR #100](https://github.com/aaacmsg/debida-diligencia-reforzada/pull/100) | #97 |
-| **D** | Exportación de expediente individual a PDF | [PR #101](https://github.com/aaacmsg/debida-diligencia-reforzada/pull/101) | #92, #32 |
-| **E** | Pruebas E2E de Playwright ejecutándose en GitHub Actions | [PR #101](https://github.com/aaacmsg/debida-diligencia-reforzada/pull/101) | #93 |
+| A | Datos de demostración y corrección del arranque | [PR #99](https://github.com/aaacmsg/debida-diligencia-reforzada/pull/99) | Bloqueo del grafo sin datos |
+| B | Seguridad: RBAC, límite de intentos, auditoría inmutable | [PR #100](https://github.com/aaacmsg/debida-diligencia-reforzada/pull/100) | #89, #90, #91 |
+| C | Refresh de tokens JWT | [PR #100](https://github.com/aaacmsg/debida-diligencia-reforzada/pull/100) | #97 |
+| D | Exportación del expediente a PDF | [PR #101](https://github.com/aaacmsg/debida-diligencia-reforzada/pull/101) | #92, #32 |
+| E | Pruebas E2E de Playwright en GitHub Actions | [PR #101](https://github.com/aaacmsg/debida-diligencia-reforzada/pull/101) | #93 |
 
 ### 3.1 Funcionalidades ajustadas y nuevas
 
-**Control de acceso por roles — RBAC (issue #89).** Nueva dependencia `require_roles()` en `backend/app/core/security.py` que aplica el principio de menor privilegio de la Ley 23:
+**Control de acceso por roles (issue #89).** Se agregó la dependencia `require_roles()` en `backend/app/core/security.py`, que aplica el principio de menor privilegio:
 
-- Aprobar/rechazar expedientes → exclusivo de **Alta Gerencia** (y admin).
-- Reporte de auditoría/trazabilidad → exclusivo del **Oficial de Cumplimiento** (y admin), conforme al criterio de aceptación CA-04.1 del PRD.
-- Configuración del sistema y registro de usuarios → exclusivo del **Administrador**. Antes de este cambio el endpoint de registro era público, lo que constituía una brecha de seguridad real que fue cerrada.
+- Aprobar y rechazar expedientes: solo Alta Gerencia (y el administrador).
+- Reporte de auditoría: solo el Oficial de Cumplimiento (y el administrador), según el criterio de aceptación CA-04.1 del PRD.
+- Configuración del sistema y registro de usuarios: solo el administrador. Antes de este cambio el registro de usuarios era público, lo que permitía a cualquier persona crearse una cuenta. Esta brecha se cerró.
 
-**Rate limiting (issue #90).** Con `slowapi`, el endpoint de login queda limitado a 10 intentos por minuto por dirección IP (configurable vía `LOGIN_RATE_LIMIT`), respondiendo HTTP 429. Mitiga ataques de fuerza bruta sobre credenciales.
+**Límite de intentos de login (issue #90).** Con la librería slowapi, el endpoint de login queda limitado a 10 intentos por minuto por dirección IP (configurable). Al exceder el límite el sistema responde HTTP 429. Esto reduce el riesgo de ataques de fuerza bruta.
 
-**Auditoría inmutable WORM (issue #91).** Listeners de SQLAlchemy (`before_update`, `before_delete`) sobre la tabla `eventos_auditoria` lanzan `AuditoriaInmutableError` ante cualquier intento de modificación o borrado: los registros de auditoría son de solo escritura, como exige la Ley 23, Art. 21. Verificado con pruebas unitarias y contra la base de datos real.
+**Auditoría inmutable (issue #91).** Se registraron eventos de SQLAlchemy que interceptan cualquier intento de actualizar o borrar un registro de la tabla `eventos_auditoria` y lanzan la excepción `AuditoriaInmutableError`. Los registros de auditoría quedan en modo de solo escritura, como exige la Ley 23, Art. 21. Se verificó con pruebas unitarias y también contra la base de datos real.
 
-**Refresh de tokens JWT (issue #97).** El login emite ahora un refresh token de 7 días (claim `type=refresh`) además del access token de 60 minutos. El endpoint `POST /auth/refresh` rota el refresh token en cada uso, y un refresh token no puede utilizarse como credencial de acceso. En el frontend, un interceptor de axios detecta los 401, renueva el token con una única llamada compartida y reintenta la petición: la sesión del usuario ya no se corta cada hora.
+**Refresh de tokens JWT (issue #97).** El login ahora entrega un refresh token de 7 días además del access token de 60 minutos. El endpoint `POST /auth/refresh` emite tokens nuevos y rota el refresh token en cada uso. Un refresh token no puede usarse como credencial de acceso. En el frontend, un interceptor detecta las respuestas 401, renueva el token y reintenta la petición, de modo que la sesión del usuario no se corta cada hora.
 
-**Exportación de expediente a PDF (issues #92 y #32).** Nuevo servicio `pdf_service.py` (fpdf2) que genera un PDF profesional del expediente con: identificación del cliente, información financiera, beneficiarios finales (con marca [PEP]), estado del expediente, documentos adjuntos con su hash SHA-256, los últimos eventos de trazabilidad y pie legal de conservación. El endpoint `GET /expedientes/{id}/pdf` registra un evento de auditoría `EXPORTAR_PDF`, y la interfaz incorpora el botón **Exportar PDF**.
+**Exportación del expediente a PDF (issues #92 y #32).** Se creó el servicio `pdf_service.py` con la librería fpdf2. El PDF incluye la identificación del cliente, la información financiera, los beneficiarios finales (con indicador PEP), el estado del expediente, los documentos adjuntos con su hash SHA-256, los últimos eventos de trazabilidad y una nota legal de conservación. El endpoint registra un evento de auditoría `EXPORTAR_PDF` y la interfaz tiene el botón "Exportar PDF".
 
-**Pruebas E2E en CI (issue #93).** Nuevo workflow `e2e-tests.yml` que en cada Pull Request levanta el stack completo con Docker Compose, aplica el seed y ejecuta los 25 tests de Playwright con Chromium, publicando el reporte como artefacto.
+**Pruebas E2E en integración continua (issue #93).** El nuevo workflow `e2e-tests.yml` levanta el sistema completo con Docker Compose, carga los datos de demostración y ejecuta las 25 pruebas de Playwright con Chromium en cada Pull Request. El reporte queda publicado como artefacto.
 
-**Datos de demostración (PR #99).** Script `seed_demo.py` idempotente: 3 usuarios (uno por rol), 8 clientes con niveles de riesgo reales calculados por el motor (3 alto / 2 medio / 3 bajo), beneficiarios finales compartidos entre sociedades (el ministro PEP «Juan Gómez» es accionista de dos empresas, visible en el grafo), expedientes en todos los estados del flujo, documentos con hash SHA-256 real, alertas y 5 funcionarios públicos para la demo de búsqueda PEP con coincidencia exacta de cédula.
+**Datos de demostración (PR #99).** El script `seed_demo.py` crea de forma repetible: 3 usuarios (uno por rol), 8 clientes con niveles de riesgo calculados por el motor real (3 alto, 2 medio, 3 bajo), beneficiarios finales compartidos entre sociedades (el cliente PEP aparece como accionista de dos empresas, lo que se aprecia en el grafo), expedientes en todos los estados del flujo, documentos con hash SHA-256, alertas y 5 funcionarios públicos para la demostración de búsqueda PEP.
 
 ### 3.2 Mejoras implementadas
 
-- **Accesibilidad (issue #34, parcial):** atributos `aria-label` en todos los botones de solo ícono (campana de alertas, controles de zoom del grafo, volver, descargar, editar/eliminar) y leyenda de colores en el grafo de relaciones.
-- **Robustez de la suite E2E:** fixture de autenticación real por API (un solo login por corrida, respetuoso del rate limiting), selectores estables por `name`/rol en lugar de selectores posicionales frágiles, y esperas explícitas para datos asíncronos.
-- **Portabilidad del entorno de pruebas:** `playwright.config.ts` parametrizable con `E2E_HOST`/`E2E_PORT` y verificación del servidor por URL IPv4 explícita.
-- **Higiene del repositorio:** creación del `.gitignore` raíz; se retiraron del control de versiones `__pycache__`, `dist/`, resultados de pruebas y el archivo `.env` del backend (que contenía una clave secreta).
-- **Documentación de proceso:** `CLAUDE.md` (guía operativa del repo), `tasks.md` (plan por fases sincronizado con issues), `docs/context/PROJECT_CONTEXT.md` (decisiones y su porqué) y bitácora de handoffs por sesión en `docs/handoffs/`.
+- Accesibilidad (issue #34, avance parcial): se agregaron atributos `aria-label` a todos los botones que solo muestran un ícono (campana de alertas, controles del grafo, volver, descargar, editar y eliminar) y una leyenda de colores en el grafo de relaciones.
+- Estabilidad de la suite E2E: fixture de autenticación por API (un solo login por corrida), selectores basados en atributos `name` y roles en lugar de selectores posicionales, y esperas explícitas para los datos que cargan de forma asíncrona.
+- Portabilidad de las pruebas: la configuración de Playwright acepta las variables `E2E_HOST` y `E2E_PORT` para entornos donde el puerto 3000 está ocupado.
+- Higiene del repositorio: se creó el archivo `.gitignore` y se retiraron del control de versiones las carpetas de caché de Python, los resultados de pruebas, la carpeta `dist` del frontend y el archivo `.env` del backend, que contenía una clave secreta.
+- Documentación de proceso: guía operativa del repositorio, plan de tareas por fases sincronizado con los issues, registro de decisiones técnicas y bitácora de sesiones de trabajo.
 
-### 3.3 Métricas aplicadas (ISTQB – TMMi – TQM)
+### 3.3 Métricas aplicadas (ISTQB, TMMi, TQM)
 
-#### Métricas de requerimientos
+Las métricas se midieron con herramientas automatizadas (pytest-cov, radon, flake8, bandit) sobre el código real del proyecto. El detalle completo, con los valores y su interpretación, está en el **Anexo C**. Resumen de la evolución entre el Parcial 2 y el cierre:
 
-| Métrica | Valor | Herramienta | Interpretación |
-|---------|-------|-------------|----------------|
-| Cobertura de requisitos implementados | 20/20 pruebas del plan = 100% ejecutables | plan-de-pruebas.md + PRD.md | Todos los requisitos funcionales del PRD cuentan con implementación y prueba |
-| Trazabilidad legal | Fórmula de riesgo, regla PEP, WORM y retención referencian artículos de Ley 23/254 | PRD.md §1–§6 | Cada control crítico tiene fundamento normativo |
-| Volatilidad | Sin cambios de alcance en el cierre | Seguimiento en tasks.md | Alcance estable tras el Parcial 2 |
-
-#### Métricas de diseño
-
-| Métrica | Valor | Herramienta | Interpretación |
-|---------|-------|-------------|----------------|
-| Complejidad ciclomática promedio | 2.4 (rating A) | radon cc | Código simple y mantenible |
-| Complejidad ciclomática máxima | 12 (`pep_service.buscar_funcionario`) | radon cc | Único punto caliente identificado; refactorización pendiente como trabajo futuro |
-| Funciones totales | 116+ en 29+ archivos Python | radon cc | Tamaño proporcionado al proyecto |
-| Diagramas de arquitectura | 2 (arquitectura + entidad-relación) verificados contra el código | architecture.md | Documentación alineada con la implementación (issue #68 cerrado) |
-
-#### Métricas de código y pruebas
-
-| Métrica | Valor inicial (Parcial 2) | Valor final | Herramienta |
-|---------|---------------------------|-------------|-------------|
-| Pruebas unitarias/integración backend | 63 | **91** (+28: RBAC, WORM, refresh, rate limit, PDF, API) | pytest |
-| Pruebas E2E ejecutándose | 0 (20 escritas pero rotas) | **25/25 en verde, integradas a CI** | Playwright |
-| Tasa de éxito de pruebas | 100% (63/63) | 100% (91/91 y 25/25) | pytest / Playwright |
-| KLOC total (backend + frontend) | 6,026 líneas | ≈ 6,900 líneas | cloc |
-| Densidad de pruebas backend | 27.4 tests/KLOC | ≈ 35 tests/KLOC | cálculo manual |
-| Code smells | 0 | 0 | flake8 |
-| Vulnerabilidades | 0 | 0 | bandit |
-| Defectos abiertos conocidos | 1 (grafo sin datos) | 0 | seguimiento en issues |
-
-El dashboard visual de métricas se genera con `python scripts/generate_metrics_dashboard.py` (cobertura, KLOC, complejidad, mantenibilidad, smells y vulnerabilidades) y se publica semanalmente como artefacto del workflow `metrics-report.yml`.
+| Métrica | Parcial 2 | Cierre | Variación |
+|---------|-----------|--------|-----------|
+| Pruebas de backend | 63 | 91 | +28 |
+| Pruebas E2E ejecutándose | 0 | 25 | +25 |
+| Cobertura de código del backend | 26% | 70% | +44 puntos |
+| Tasa de éxito de las pruebas | 100% | 100% | igual |
+| Vulnerabilidades (bandit) | 0 | 0 | igual |
+| Defectos conocidos abiertos | 1 | 0 | -1 |
 
 ### 3.4 Defectos corregidos
 
-Los siguientes defectos reales fueron detectados y corregidos durante el cierre — la mayoría **descubiertos por las pruebas E2E**, lo que valida la inversión en automatización:
+Durante el cierre se detectaron y corrigieron 7 defectos reales. La mayoría los encontraron las pruebas E2E, lo que confirma el valor de haberlas puesto a funcionar:
 
 | # | Defecto | Severidad | Cómo se detectó | Corrección |
 |---|---------|-----------|-----------------|------------|
-| 1 | El backend no arrancaba con la configuración de docker-compose (`Settings` rechazaba `REDIS_URL`/`ALLOWED_ORIGINS`) | **Crítica** | Al ejecutar el seed | Campos agregados a `config.py` con `extra="ignore"` (PR #99) |
-| 2 | **El formulario EDD no se podía enviar** con campos numéricos vacíos: `valueAsNumber` produce `NaN`, la validación lo rechaza y el error quedaba oculto en un acordeón colapsado | **Crítica** | Prueba E2E TC-05 | Preprocesamiento de `NaN → undefined` en el esquema Zod (PR #101) |
-| 3 | Campos opcionales vacíos viajaban como `""` y el backend respondía 422 (`EmailStr`, `datetime` no aceptan cadena vacía) | **Alta** | Prueba E2E TC-05 (red: POST 422) | Sanitización del payload antes de enviar (PR #101) |
-| 4 | El toast de error crasheaba React al intentar renderizar el `detail` de FastAPI (que es un arreglo de objetos) | Media | Consola durante depuración E2E | Extractor seguro de mensajes de error (PR #101) |
-| 5 | El dashboard mostraba tarjetas en 0 y etiquetas ilegibles (`EstadoExpediente.BORRADOR`): los enums se serializaban con `str()` en lugar de `.value` | Alta (visual) | Verificación de UI con Playwright | Serialización con `.value` en `reportes.py` (PR #100) |
-| 6 | El endpoint de registro de usuarios era **público**: cualquiera podía crearse una cuenta con rol admin | **Crítica** (seguridad) | Revisión de seguridad de la Fase B | Registro restringido a administradores vía RBAC (PR #100) |
-| 7 | 17 de 25 pruebas E2E corrían sin autenticación (fixture importado pero no utilizado) y otras usaban selectores/textos que no existían en la UI | Alta (calidad) | Primera ejecución completa de la suite | Fixture y selectores reescritos (PR #101) |
+| 1 | El backend no arrancaba con la configuración de docker-compose | Crítica | Al ejecutar el seed | Campos `redis_url` y `allowed_origins` agregados a la configuración (PR #99) |
+| 2 | El formulario EDD no se podía enviar si los campos de ingresos o patrimonio quedaban vacíos. El navegador convierte un campo numérico vacío en NaN, la validación lo rechazaba y el mensaje de error quedaba dentro de una sección colapsada, invisible para el usuario | Crítica | Prueba E2E TC-05 | Se trata el NaN como campo sin valor en el esquema de validación (PR #101) |
+| 3 | Los campos opcionales vacíos se enviaban como cadena vacía y el backend respondía error 422, porque los tipos EmailStr y datetime no aceptan cadena vacía | Alta | Prueba E2E TC-05 (respuesta 422 en la red) | Los campos sin valor se omiten del envío (PR #101) |
+| 4 | La notificación de error fallaba al intentar mostrar el detalle del error 422, que es una lista de objetos y no un texto | Media | Consola del navegador durante la depuración | Se agregó un extractor de mensajes que convierte el detalle a texto (PR #101) |
+| 5 | El dashboard mostraba las tarjetas en cero y etiquetas como "EstadoExpediente.BORRADOR" porque los enums se serializaban con str() en lugar de su valor | Alta | Verificación visual de la interfaz | Serialización con `.value` en el endpoint de reportes (PR #100) |
+| 6 | El registro de usuarios era público: cualquier persona podía crearse una cuenta, incluso con rol de administrador | Crítica | Revisión de seguridad de la Fase B | El registro quedó restringido al administrador (PR #100) |
+| 7 | 17 de las 25 pruebas E2E corrían sin autenticación y una buscaba una tabla que la interfaz no tiene; en local una de ellas se saltaba su propio contenido por una verificación sin espera | Alta | Primera ejecución completa de la suite | Fixture y pruebas reescritos (PR #101) |
 
 ### 3.5 Decisiones técnicas y su justificación
 
 | Decisión | Justificación |
 |----------|---------------|
-| **Un Pull Request por fase** con CI obligatorio | Cada incremento queda revisado, verificado y documentado; los issues se cierran automáticamente con el merge (`Closes #n`) |
-| **bcrypt directo** en lugar de passlib | Incompatibilidades de passlib con versiones recientes de Python |
-| **fpdf2** para la exportación a PDF | Librería Python pura (sin dependencias nativas), suficiente para un documento estructurado con estilo corporativo |
-| **slowapi** para rate limiting | Integración natural con FastAPI/Starlette; límite configurable por entorno (10/min en producción, 200/min en CI para no interferir con las E2E) |
-| **Listeners ORM para WORM** en lugar de triggers de base de datos | Protección en la capa de aplicación, portable entre motores (PostgreSQL en producción, SQLite en pruebas) y verificable con pruebas unitarias |
-| **Rotación de refresh tokens** | Reduce la ventana de uso de un token robado; el refresh usado como access token se rechaza explícitamente |
-| **Login por API en el fixture E2E** (una vez por corrida) en lugar de login por UI en cada test | Reduce ~20 logins a 1, respeta el rate limiting y acelera la suite; el login por UI se prueba una sola vez en su spec propio |
-| **Grafo SVG propio** con simulación de fuerzas en lugar de PyVis/Plotly | Evita dependencias de Python en el frontend; control total de la interacción (drag, zoom, pan) |
-| **Regla PEP inflexible** (`es_pep=true` ⇒ riesgo alto + aprobación gerencial) | Exigencia directa de la Ley 23 y la Rec. 12 del GAFI: ningún PEP puede pasar desapercibido, independientemente del score |
-| **OFAC/ONU/UE no implementado** | No existen APIs públicas gratuitas; documentado como exclusión (PRD §12) en lugar de simular la funcionalidad |
+| Un Pull Request por fase, con CI obligatorio | Cada incremento queda revisado y verificado, y los issues se cierran automáticamente con el merge |
+| bcrypt directo en lugar de passlib | passlib presenta incompatibilidades con versiones recientes de Python |
+| fpdf2 para el PDF | Librería de Python puro, sin dependencias nativas, suficiente para un documento estructurado |
+| slowapi para el límite de intentos | Se integra directamente con FastAPI y el límite es configurable por entorno (10 por minuto en uso normal, 200 en el entorno de pruebas E2E para no interferir con la suite) |
+| Eventos del ORM para la inmutabilidad, en lugar de triggers de base de datos | La protección queda en la capa de aplicación, funciona igual en PostgreSQL y en SQLite (usado en pruebas) y se puede verificar con pruebas unitarias |
+| Rotación del refresh token en cada uso | Reduce la ventana de uso de un token robado |
+| Login por API en el fixture de pruebas E2E, en lugar de login por interfaz en cada prueba | Reduce unos 20 logins a 1 por corrida, respeta el límite de intentos y acelera la suite; el login por interfaz se prueba una sola vez en su propia prueba |
+| Grafo SVG propio en lugar de PyVis o Plotly | Evita dependencias de Python en el frontend y da control total de la interacción |
+| Regla PEP sin excepciones (PEP implica riesgo alto y aprobación gerencial) | Es una exigencia de la Ley 23 y de la Recomendación 12 del GAFI |
+| No implementar OFAC/ONU/UE | No existen APIs públicas gratuitas; se documentó como exclusión en lugar de simular la funcionalidad |
 
 ---
 
@@ -232,123 +214,215 @@ Los siguientes defectos reales fueron detectados y corregidos durante el cierre 
 
 | Versión | Fecha | Cambios | Justificación |
 |---------|-------|---------|---------------|
-| 0.1 | 2026-05-31 | PRD inicial, plan de pruebas y kanban de 62 tareas | Definición del alcance del proyecto |
-| 0.2 | 2026-06-15 | Daily Scrum con métricas ISTQB/TMMi/TQM del Parcial 2 | Evidencia de medición de calidad (Unidad II) |
-| 0.3 | 2026-07-13 | Sistema de contexto y consolidación de tareas por fases | Preparación del cierre; una sola fuente de verdad |
-| 1.0 | 2026-07-13/14 | **Documento final**: retrospectiva, adecuaciones del Parcial 2 (fases A–E), métricas actualizadas, conclusiones | Entrega de cierre del curso |
+| 0.1 | 2026-05-31 | PRD inicial, plan de pruebas y kanban de 62 tareas | Definición del alcance |
+| 0.2 | 2026-06-15 | Daily Scrum con las métricas del Parcial 2 | Evidencia de medición de calidad (Unidad II) |
+| 0.3 | 2026-07-13 | Consolidación de tareas por fases y documentos de contexto | Preparación del cierre |
+| 1.0 | 2026-07-14 | Documento final: retrospectiva, adecuaciones, métricas y conclusiones | Entrega de cierre del curso |
+| 1.1 | 2026-07-14 | Anexos con tablas de pruebas ejecutadas y métricas con valores reales; ajustes de redacción | Cumplir el formato de entrega solicitado |
 
 ### 4.2 Control de versiones del software (Git)
 
-El repositorio https://github.com/aaacmsg/debida-diligencia-reforzada contiene la historia completa del proyecto en la rama `master`. Hitos principales:
+Todo el desarrollo está en el repositorio https://github.com/aaacmsg/debida-diligencia-reforzada, en la rama `master`. Hitos principales del historial:
 
-| Commit / PR | Descripción |
+| Commit o PR | Descripción |
 |-------------|-------------|
-| `234ebe3` scaffolding | Estructura inicial backend/frontend |
-| `53cce33`, `95990a2`, `6975b31` | Correcciones de CI: triggers en `master`, Alembic con `DATABASE_URL`, UTF-8 en Windows |
-| `3c3edc6` bugfixes | Estabilización previa al cierre |
-| `4c63f0e` | Sistema de contexto: CLAUDE.md, tasks.md por fases, handoffs |
-| **PR #99** (`0e95f6d`) | Fase A: seed de demostración + fix de arranque |
-| **PR #100** (`6212a0f`) | Fases B y C: RBAC, rate limiting, WORM, refresh JWT + fix del dashboard |
-| **PR #101** | Fases D y E: exportación PDF + E2E en CI + 4 defectos corregidos + `.gitignore` |
+| `234ebe3` | Estructura inicial del backend y el frontend |
+| `53cce33`, `95990a2`, `6975b31` | Correcciones de CI: triggers en `master`, Alembic con variable de entorno, codificación UTF-8 |
+| `3c3edc6` | Correcciones de estabilidad previas al cierre |
+| `4c63f0e` | Documentos de contexto y plan de tareas por fases |
+| PR #99 | Fase A: datos de demostración y corrección del arranque |
+| PR #100 | Fases B y C: RBAC, límite de intentos, auditoría inmutable, refresh de tokens y corrección del dashboard |
+| PR #101 | Fases D y E: exportación a PDF, pruebas E2E en CI y corrección de 4 defectos |
 
 Complementos del versionamiento:
 
-- **GitHub Issues**: 101 elementos numerados; los issues #1–#68 corresponden a las tareas de verificación del kanban original y los #69–#98 al backlog de features, cerrados con evidencia al completarse.
-- **GitHub Projects** (tablero #2 «Debida Diligencia R»): columnas Backlog / In progress / Done con los 30 issues de features.
-- **GitHub Actions**: cada push y PR ejecuta `backend-ci` (flake8, bandit, radon, alembic, pytest con cobertura), `frontend-ci` (build) y `e2e-tests` (Playwright); `metrics-report` genera el dashboard de métricas semanalmente.
+- **GitHub Issues:** más de 100 elementos numerados con etiquetas por área (backend, frontend, security, testing, entre otras). Los issues se cierran con evidencia al completarse el trabajo.
+- **GitHub Projects (tablero #2):** columnas Backlog, In progress y Done con los issues de funcionalidades.
+- **GitHub Actions:** cada push y Pull Request ejecuta tres workflows (pruebas de backend con cobertura, build del frontend y pruebas E2E) y un cuarto genera el dashboard de métricas cada semana.
 
 ### 4.3 Flujo de trabajo con Pull Requests
 
-Desde el cierre del Parcial 2 ningún cambio de funcionalidad entra directo a `master`: se desarrolla en una rama `fase-<letra>-<tema>`, se abre un Pull Request con descripción de cambios y verificación realizada, el CI debe pasar en verde, y el merge cierra automáticamente los issues correspondientes. Este flujo queda evidenciado en los PRs #99, #100 y #101.
+Desde el cierre del Parcial 2, ningún cambio de funcionalidad entra directo a `master`. El flujo es: rama por fase, Pull Request con descripción de los cambios y de la verificación realizada, CI en verde como requisito, y merge que cierra los issues correspondientes. Los PRs #99, #100 y #101 son la evidencia de este flujo.
 
 ---
 
 ## 5. Conclusiones
 
-### 5.1 Conclusiones individuales
+### 5.1 Conclusiones y reflexiones individuales
 
-> *Borradores para que cada integrante los revise y los haga suyos.*
+**César Santiago.**
+En lo técnico, este proyecto me obligó a trabajar la parte del software que no se ve: la integración continua, el control de versiones y la seguridad. Configurar los workflows de GitHub Actions y verlos fallar por detalles como el nombre de la rama o una variable de entorno me enseñó que el entorno es parte del producto. En lo personal, me quedo con la disciplina de cerrar cada tarea con evidencia. Antes daba por terminado algo cuando "se veía bien"; ahora entiendo que sin una prueba que lo respalde no hay forma de saber si sigue funcionando después del siguiente cambio. También aprendí a leer una ley y convertirla en reglas de negocio concretas, algo que no esperaba hacer en esta materia.
 
-**César Santiago.** Este proyecto me permitió experimentar el ciclo completo de un producto de software con requisitos regulatorios reales. Lo más valioso fue comprobar que la infraestructura de proceso —integración continua, un tablero honesto y un flujo de Pull Requests— no es burocracia: fue lo que nos permitió detectar que funcionalidades que creíamos terminadas tenían defectos críticos, y corregirlos con evidencia. Aprendí a traducir artículos de ley (Ley 23, Ley 254) en reglas de negocio verificables por pruebas, y que la medición (ISTQB/TMMi) solo sirve si se actúa sobre ella.
+**Roberto López.**
+Mi mayor aprendizaje fue la diferencia entre probar piezas y probar el sistema completo. El formulario de clientes pasaba su validación y aun así nadie podía crear un cliente desde la pantalla, por un detalle en cómo el navegador maneja los campos numéricos vacíos. Ese defecto llevaba tiempo ahí y ninguna prueba unitaria lo iba a encontrar. Trabajar con Playwright me cambió la forma de construir interfaces: ahora pienso en cómo se va a probar cada pantalla mientras la programo, uso atributos estables para los selectores y agrego las etiquetas de accesibilidad desde el inicio, porque además de ayudar a los usuarios hacen las pruebas más confiables.
 
-**Roberto López.** Mi mayor aprendizaje técnico fue la diferencia entre probar componentes y probar el sistema. El formulario EDD pasaba su validación local y aun así el flujo completo estaba roto por un detalle de conversión de tipos; solo una prueba de punta a punta, con navegador real y backend real, lo hizo visible. También interioricé que la accesibilidad (aria-labels, contraste, foco) no es un extra estético sino un requisito verificable, y que escribir selectores de prueba estables es una habilidad de diseño de UI, no solo de testing.
-
-**Jean Suárez.** Trabajar la capa de seguridad me enseñó que los controles deben diseñarse para fallar de forma segura: la inmutabilidad WORM se implementó de modo que cualquier intento de alteración lance una excepción, el registro de usuarios quedó restringido por rol, y los tokens se rotan y expiran. La lección de proceso fue la paridad de entornos: la mitad de nuestros bloqueos históricos (Python 3.14, `main` vs `master`, codificación en Windows) no eran errores de lógica sino de entorno, y se resuelven con configuración explícita y contenedores.
+**Jean Suárez.**
+Implementar la seguridad me enseñó que los controles tienen que diseñarse pensando en que alguien va a intentar saltárselos. El registro de usuarios abierto era un error que no se notaba usando la aplicación de forma normal; solo apareció al preguntarnos qué podría hacer un usuario malintencionado. Me quedo con tres prácticas: restringir por defecto y abrir solo lo necesario (RBAC), hacer que lo prohibido falle con una excepción y no con un aviso (la auditoría inmutable), y fijar las versiones de todo, porque la mitad de nuestros problemas fueron diferencias de entorno y no errores de lógica. En el proceso, aprendí a valorar las retrospectivas: los problemas que anotamos en junio fueron la base para no repetirlos en julio.
 
 ### 5.2 Conclusión grupal sobre la calidad del producto
 
-El equipo considera que el producto alcanzó un nivel de calidad **verificable y demostrable** para su alcance académico: 91 pruebas de backend y 25 pruebas E2E ejecutándose automáticamente en cada cambio, 0 vulnerabilidades detectadas por bandit, 0 code smells por flake8, complejidad ciclomática promedio de 2.4 (rating A) y los cuatro controles regulatorios centrales (fórmula de riesgo EBR, regla PEP, auditoría WORM y flujo de aprobación gerencial) implementados con su fundamento legal y sus pruebas. La calidad no se afirmó: se midió, se encontraron siete defectos reales —tres de ellos críticos— y se corrigieron con evidencia en los Pull Requests #99–#101.
+Como equipo consideramos que el producto cerró con una calidad medida y demostrable para su alcance académico. Los números que lo respaldan: 91 pruebas de backend y 25 pruebas E2E pasando en cada cambio, cobertura de código del 70% en el backend, cero vulnerabilidades reportadas por bandit y complejidad promedio de 2.48 (calificación A de radon). Los cuatro controles regulatorios centrales (la fórmula de riesgo, la regla PEP, la auditoría inmutable y el flujo de aprobación gerencial) están implementados con su fundamento legal y con pruebas que los verifican. Durante el cierre encontramos 7 defectos reales, 3 de ellos críticos, y todos quedaron corregidos y documentados en los Pull Requests. La conclusión más importante es de método: la calidad del producto mejoró cuando el equipo dejó de confiar en la impresión de que algo funcionaba y empezó a exigir evidencia.
 
 ### 5.3 Evaluación del proceso colaborativo
 
-El proceso evolucionó durante el semestre de un trabajo individual paralelo a una colaboración estructurada: tablero compartido en GitHub Projects, issues con etiquetas y evidencia de cierre, retrospectivas documentadas (daily-scrum-presentacion.md) y, en el cierre, revisión por Pull Request. Los momentos de mayor fricción coincidieron con la falta de una fuente única de verdad sobre el estado del proyecto (tres listas de tareas divergentes); consolidarlas en `tasks.md` sincronizado con los issues resolvió el problema. La adaptación al formato de entrega por video ante la incapacidad de la profesora se gestionó sin pérdida de alcance.
+El proceso mejoró a lo largo del semestre. Al inicio cada integrante trabajaba en paralelo y el estado del proyecto vivía en conversaciones; al cierre, el trabajo pasa por un tablero compartido, issues con etiquetas, retrospectivas escritas y revisión por Pull Request. El punto de mayor fricción fue tener tres listas de tareas distintas que se contradecían entre sí; consolidarlas en una sola, sincronizada con los issues, resolvió las discusiones sobre qué faltaba. La adaptación al formato de entrega por video, ante la incapacidad de la profesora, se manejó sin recortar el alcance.
 
 ### 5.4 Recomendaciones para futuras iteraciones
 
-1. **Elevar la cobertura de backend por encima del 50%** con pruebas de integración de los endpoints restantes (hoy la cobertura de línea ronda el 26–30% aunque los flujos críticos están cubiertos).
-2. **Refactorizar `pep_service.buscar_funcionario`** (complejidad 12) dividiéndolo en funciones de normalización, matching y scoring.
-3. **Completar el backlog P1/P2 documentado**: tarea programada de Celery para la descarga mensual automática de CSVs PEP (#94), notificaciones por correo para alertas de alto riesgo (#96), panel de administración de usuarios (#95) y feature flags (#98).
-4. **Incorporar SonarQube** al CI para medir deuda técnica de forma continua.
-5. **Matriz de trazabilidad formal** requisito → prueba → código, generada automáticamente desde los IDs de los specs.
-6. **MFA para roles críticos** (previsto en el modelo de datos con `mfa_secret`, pendiente de implementación) y evaluación de un proveedor de firma digital para los documentos.
+1. Subir la cobertura del backend del 70% hacia el 85% cubriendo los endpoints de alertas, configuración y documentos, que son los de menor cobertura.
+2. Refactorizar las dos funciones con mayor complejidad ciclomática: `generar_pdf_expediente` (26) y `buscar_funcionario` (12), separándolas en funciones más pequeñas.
+3. Limpiar las 35 incidencias menores de estilo que reporta flake8 (imports sin uso y líneas largas en su mayoría) y agregar el linter como paso obligatorio del CI.
+4. Completar el backlog documentado: descarga mensual automática de los CSV de PEP con Celery (#94), notificaciones por correo para alertas de alto riesgo (#96), panel de administración de usuarios (#95) y feature flags (#98).
+5. Implementar el doble factor de autenticación para los roles críticos (el modelo de datos ya lo contempla).
+6. Incorporar SonarQube al CI para medir deuda técnica de forma continua y construir una matriz de trazabilidad requisito-prueba-código generada automáticamente.
 
 ---
 
-## 6. Referencias normativas y técnicas
+## 6. Referencias
 
-1. Ministerio de Economía y Finanzas de Panamá. (2015). *Ley 23 de 27 de abril de 2015* — Prevención de blanqueo de capitales, financiamiento del terrorismo y proliferación de armas de destrucción masiva.
-2. Asamblea Nacional de Panamá. (2021). *Ley N.º 254 de 11 de noviembre de 2021* — Transparencia fiscal internacional y fortalecimiento AML/CFT.
-3. Superintendencia de Bancos de Panamá. (2025). *Resolución General SBP-RG-PSO-R-2025-00671* — Otros Sujetos Obligados Financieros.
-4. GAFILAT. (2024). *Estándares internacionales — Recomendaciones y metodología* (Recomendaciones 10, 12, 19 y 24).
-5. ISTQB. *Certified Tester Foundation Level Syllabus* — métricas y proceso de pruebas.
-6. TMMi Foundation. *Test Maturity Model integration* — madurez del proceso de pruebas.
-7. Documentación técnica: FastAPI, SQLAlchemy 2.0, React 18, Playwright, pytest, GitHub Actions.
-
----
-
-## 7. Anexos — Evidencias
-
-> Las capturas se insertan en la versión PDF final. Cada marcador indica la evidencia requerida.
-
-### Anexo A — Capturas del sistema
-
-- **A.1** `<INSERTAR AQUÍ: captura de la pantalla de Login (usuario admin)>`
-- **A.2** `<INSERTAR AQUÍ: captura del Dashboard con las tarjetas de totales, el gráfico de pastel por estado y el de barras por nivel de riesgo — con los datos del seed: 8 expedientes, 3 alto / 2 medio / 3 bajo>`
-- **A.3** `<INSERTAR AQUÍ: captura del Formulario EDD (ClientesPage) con los módulos en acordeón y la sección PEP ampliada al marcar es_pep>`
-- **A.4** `<INSERTAR AQUÍ: captura de la lista de Expedientes con los badges de estado (Pendiente Gerencia) y riesgo (Alto/Medio/Bajo)>`
-- **A.5** `<INSERTAR AQUÍ: captura del detalle de un expediente con las 3 pestañas (Detalle, Documentos, Trazabilidad) y el botón Exportar PDF>`
-- **A.6** `<INSERTAR AQUÍ: captura del PDF exportado del expediente EDD-…-SEED0002 (Juan Gómez, PEP, riesgo ALTO)>`
-- **A.7** `<INSERTAR AQUÍ: captura de la Búsqueda PEP con el match exacto por cédula 8-702-3355 (score 100)>`
-- **A.8** `<INSERTAR AQUÍ: captura del Grafo de Relaciones mostrando al PEP Juan Gómez conectado a Constructora Istmo e Inversiones Caribe, con la leyenda de colores>`
-- **A.9** `<INSERTAR AQUÍ: captura del dropdown de Alertas en vivo con las alertas del seed>`
-- **A.10** `<INSERTAR AQUÍ: captura del modal/flujo de aprobación con comentario obligatorio>`
-
-### Anexo B — Evidencias de pruebas
-
-- **B.1** `<INSERTAR AQUÍ: captura de la terminal con pytest: 91 passed>`
-- **B.2** `<INSERTAR AQUÍ: captura de la terminal o del reporte HTML de Playwright: 25 passed>`
-- **B.3** `<INSERTAR AQUÍ: captura del workflow e2e-tests en GitHub Actions en verde>`
-- **B.4** `<INSERTAR AQUÍ: captura del dashboard de métricas (backend/metrics/dashboard.html): cobertura, KLOC, complejidad, smells, vulnerabilidades>`
-- **B.5** `<INSERTAR AQUÍ: captura de la demostración WORM: intento de modificar un evento de auditoría rechazado con AuditoriaInmutableError>`
-- **B.6** `<INSERTAR AQUÍ: captura del login respondiendo 429 tras exceder el límite de intentos (rate limiting)>`
-
-### Anexo C — Evidencias de gestión y versionamiento
-
-- **C.1** `<INSERTAR AQUÍ: captura del tablero GitHub Projects #2 con columnas Backlog / In progress / Done>`
-- **C.2** `<INSERTAR AQUÍ: captura de la lista de issues cerrados con sus etiquetas (backend, security, testing, completed…)>`
-- **C.3** `<INSERTAR AQUÍ: captura del historial de commits de la rama master (git log o pestaña Commits de GitHub)>`
-- **C.4** `<INSERTAR AQUÍ: capturas de los Pull Requests #99, #100 y #101 con sus checks de CI en verde>`
-- **C.5** `<INSERTAR AQUÍ: captura de los workflows de GitHub Actions (backend-ci, frontend-ci, e2e-tests, metrics-report)>`
-
-### Anexo D — Código relevante (fragmentos citados en el documento)
-
-- **D.1** Fórmula ponderada de riesgo — `backend/app/services/riesgo_service.py`
-- **D.2** Regla PEP y auto-creación de expediente — `backend/app/api/v1/endpoints/clientes.py`
-- **D.3** RBAC `require_roles()` y refresh tokens — `backend/app/core/security.py`
-- **D.4** Inmutabilidad WORM — `backend/app/models/models.py` (listeners al final del archivo)
-- **D.5** Generación de PDF — `backend/app/services/pdf_service.py`
-- **D.6** Interceptor de refresh automático — `frontend/src/services/api.ts`
+1. Ministerio de Economía y Finanzas de Panamá. (2015). Ley 23 de 27 de abril de 2015.
+2. Asamblea Nacional de Panamá. (2021). Ley N.° 254 de 11 de noviembre de 2021.
+3. Superintendencia de Bancos de Panamá. (2025). Resolución General SBP-RG-PSO-R-2025-00671.
+4. GAFILAT. (2024). Estándares internacionales, Recomendaciones 10, 12, 19 y 24.
+5. ISTQB. Certified Tester Foundation Level Syllabus.
+6. TMMi Foundation. Test Maturity Model integration.
+7. Documentación de FastAPI, SQLAlchemy, React, Playwright, pytest y GitHub Actions.
 
 ---
 
-*Documento generado como parte del cierre del Proyecto Semestral — Ingeniería de Software IV, Universidad Tecnológica de Panamá.*
+## 7. Anexos
+
+### Anexo A. Capturas del sistema
+
+> Las capturas se insertan en la versión PDF. Cada marcador indica la imagen requerida.
+
+- **A.1** `<INSERTAR IMAGEN: pantalla de Login>`
+- **A.2** `<INSERTAR IMAGEN: Dashboard con las tarjetas de totales y los gráficos por estado y por nivel de riesgo (datos del seed: 8 expedientes, 3 alto, 2 medio, 3 bajo)>`
+- **A.3** `<INSERTAR IMAGEN: formulario EDD con los módulos en acordeón y la sección PEP visible al marcar la casilla>`
+- **A.4** `<INSERTAR IMAGEN: lista de Expedientes con los distintivos de estado y riesgo>`
+- **A.5** `<INSERTAR IMAGEN: detalle de un expediente con las pestañas Detalle, Documentos y Trazabilidad, y el botón Exportar PDF>`
+- **A.6** `<INSERTAR IMAGEN: PDF exportado del expediente del cliente PEP (EDD-...-SEED0002)>`
+- **A.7** `<INSERTAR IMAGEN: búsqueda PEP con coincidencia exacta por cédula 8-702-3355 y score 100>`
+- **A.8** `<INSERTAR IMAGEN: grafo de relaciones con el cliente PEP conectado a dos empresas y la leyenda de colores>`
+- **A.9** `<INSERTAR IMAGEN: panel de alertas abierto desde la campana>`
+- **A.10** `<INSERTAR IMAGEN: aprobación de un expediente con el comentario obligatorio>`
+
+### Anexo B. Reportes de pruebas ejecutadas y resultados
+
+#### B.1 Pruebas de backend (pytest)
+
+Ejecutadas en GitHub Actions y dentro del contenedor Docker contra PostgreSQL. Resultado de la última corrida: **91 pruebas aprobadas, 0 fallidas** (una de ellas, la del límite de intentos, se omite automáticamente cuando el entorno tiene el límite elevado para las pruebas E2E).
+
+| Archivo de pruebas | Cantidad | Qué verifica | Resultado |
+|--------------------|----------|--------------|-----------|
+| `test_riesgo_service.py` | 49 | Fórmula de riesgo: puntajes por país (10), cargo (8), sector (9), vínculos (6), origen de fondos (2), determinación del nivel (6) y cálculo completo (8) | 49 aprobadas |
+| `test_security.py` | 14 | Hash de contraseñas con bcrypt (6) y creación y validación de JWT (8) | 14 aprobadas |
+| `test_rbac.py` | 6 | Control de acceso por roles: rol permitido, admin siempre permitido, rol incorrecto rechazado con 403, variantes | 6 aprobadas |
+| `test_worm.py` | 4 | Inmutabilidad de la auditoría: crear funciona, modificar y eliminar lanzan excepción, el registro queda intacto | 4 aprobadas |
+| `test_refresh_token.py` | 5 | Refresh token con su tipo y expiración correctos, y rechazo del refresh usado como access | 5 aprobadas |
+| `test_pdf_service.py` | 3 | El PDF se genera válido, tolera campos vacíos y caracteres fuera de latin-1 | 3 aprobadas |
+| `test_api_security.py` | 7 | Integración por API: login con refresh, rotación, RBAC en aprobar y en auditoría, registro restringido, límite de intentos con respuesta 429 | 7 aprobadas |
+| `test_api_pdf.py` | 3 | Integración por API: exportar PDF de un expediente real, 404 si no existe, 401 sin autenticación | 3 aprobadas |
+| **Total** | **91** | | **91 aprobadas** |
+
+#### B.2 Pruebas E2E (Playwright, navegador Chromium)
+
+Ejecutadas en GitHub Actions contra el sistema completo (frontend, backend y base de datos con los datos de demostración). Resultado de la última corrida: **25 pruebas aprobadas, 0 fallidas**, duración total aproximada de 1 minuto. Correspondencia con el plan de pruebas (`plan-de-pruebas.md`):
+
+| N.° | Caso | Prueba del plan | Resultado |
+|-----|------|-----------------|-----------|
+| 1 | TC-01 Login exitoso con admin | ALF-06 | Aprobada |
+| 2 | TC-02 Login fallido muestra el error | ALF-06 | Aprobada |
+| 3 | TC-03 Sin sesión redirige a /login | ALF-06 | Aprobada |
+| 4 | Rutas protegidas redirigen a /login | ALF-07 | Aprobada |
+| 5 | TC-04 No permite guardar con campos obligatorios vacíos | ALF-02 | Aprobada |
+| 6 | TC-05 Crea un cliente con datos válidos | ALF-02 | Aprobada |
+| 7 | TC-06 Los campos PEP son obligatorios si el cliente es PEP | ALF-02 / UX-02 | Aprobada |
+| 8 | Módulo de beneficiario final se abre y muestra su contenido | ALF-01 | Aprobada |
+| 9 | TC-07 Un cliente PEP genera expediente pendiente de gerencia con riesgo alto | BET-02 | Aprobada |
+| 10 | TC-08 Aprobar exige comentario | ALF-04 | Aprobada |
+| 11 | TC-09 Crear un cliente genera evento de auditoría visible en la trazabilidad | ALF-05 | Aprobada |
+| 12 | TC-10 Editar un cliente genera evento de auditoría | ALF-08 | Aprobada |
+| 13 | Los eventos de auditoría tienen fecha de creación | ALF-09 | Aprobada |
+| 14 | TC-11 El expediente del PEP requiere aprobación gerencial | BET-02 | Aprobada |
+| 15 | TC-12 Carga de documento en el expediente | BET-01 | Aprobada |
+| 16 | TC-13 Los campos PEP aparecen al marcar la casilla | UX-02 | Aprobada |
+| 17 | TC-14 Los campos PEP se ocultan al desmarcarla | UX-02 | Aprobada |
+| 18 | Colores de riesgo consistentes entre páginas | UX-03 | Aprobada |
+| 19 | TC-15 El grafo carga con nodos, aristas y leyenda | UX-04 | Aprobada |
+| 20 | TC-16 Los controles de zoom funcionan (acercar, alejar, restablecer) | UX-04 | Aprobada |
+| 21 | TC-17 Los nodos del grafo se pueden arrastrar | UX-04 | Aprobada |
+| 22 | TC-18 En móvil (320 px) no hay desplazamiento horizontal | UX-06 | Aprobada |
+| 23 | TC-19 En tableta (768 px) el diseño se adapta | UX-06 | Aprobada |
+| 24 | TC-20 Los elementos interactivos tienen etiqueta accesible o texto visible | UX-07 | Aprobada |
+| 25 | Contraste de colores en los textos principales | UX-07 | Aprobada |
+
+Nota sobre BET-03 (listas OFAC/ONU/UE): no aplica, documentado como exclusión por falta de APIs públicas gratuitas.
+
+- **B.3** `<INSERTAR IMAGEN: terminal con el resultado de pytest (91 passed)>`
+- **B.4** `<INSERTAR IMAGEN: resultado de Playwright (25 passed) en local o en GitHub Actions>`
+- **B.5** `<INSERTAR IMAGEN: workflow e2e-tests en verde en la pestaña Actions>`
+
+### Anexo C. Métricas aplicadas con valores reales e interpretación
+
+Medición realizada el 14 de julio de 2026 sobre el código del cierre, con las herramientas indicadas.
+
+#### C.1 Métricas de pruebas (ISTQB)
+
+| Métrica | Valor real | Herramienta | Interpretación |
+|---------|-----------|-------------|----------------|
+| Pruebas de backend | 91 (63 unitarias del Parcial 2 + 28 nuevas) | pytest | El crecimiento corresponde a las funcionalidades de seguridad y PDF agregadas en el cierre |
+| Pruebas E2E | 25 | Playwright | Cubren los 20 casos del plan de pruebas más 5 verificaciones adicionales |
+| Tasa de éxito | 100% (91/91 y 25/25) | pytest, Playwright | No hay pruebas fallando ni deshabilitadas |
+| Cobertura de línea del backend | 70% (1,367 sentencias, 409 sin cubrir) | pytest-cov | Subió del 26% al 70% gracias a las pruebas de integración por API. Lo no cubierto se concentra en los endpoints de alertas, configuración y documentos |
+| Densidad de pruebas del backend | 34.4 pruebas por KLOC (91 / 2.648) | cálculo directo | Densidad alta para el tamaño del proyecto |
+| Defectos detectados en el cierre | 7 (3 críticos, 3 altos, 1 medio) | pruebas E2E y revisión | Todos corregidos; la sección 3.4 detalla cada uno |
+| Defectos abiertos al cierre | 0 | seguimiento en issues | No quedan fallas conocidas sin resolver |
+
+#### C.2 Métricas de código
+
+| Métrica | Valor real | Herramienta | Interpretación |
+|---------|-----------|-------------|----------------|
+| Líneas de código del producto | 6,430 (backend 2,648 + frontend 3,782) | conteo de líneas | Proyecto de tamaño mediano para un equipo de 3 personas |
+| Líneas de código de pruebas y scripts | 1,939 | conteo de líneas | Cerca del 30% del tamaño del producto está dedicado a verificación |
+| Complejidad ciclomática promedio | 2.48, calificación A (131 bloques analizados) | radon cc | El código es mayormente simple y fácil de mantener |
+| Bloques con complejidad alta | 2: `generar_pdf_expediente` con 26 (D) y `buscar_funcionario` con 12 (C) | radon cc | El generador de PDF es una secuencia larga de secciones con condicionales simples; aun así, ambos quedan como candidatos a refactorización (sección 5.4) |
+| Incidencias de estilo | 35 (17 imports sin uso, 5 archivos sin salto de línea final, 4 líneas largas, 4 comparaciones con False, 2 except genéricos, 2 de indentación, 1 variable sin uso) | flake8 | Son incidencias menores que no afectan el funcionamiento; se recomienda limpiarlas y hacer el linter obligatorio en CI |
+| Vulnerabilidades de seguridad | 0 | bandit | El análisis estático no reporta patrones inseguros en el backend |
+
+#### C.3 Métricas de proceso (TMMi, TQM)
+
+| Métrica | Valor real | Fuente | Interpretación |
+|---------|-----------|--------|----------------|
+| Pull Requests del cierre | 3 (#99, #100, #101), los tres con CI en verde antes del merge | GitHub | Todo el incremento del cierre pasó por revisión y verificación automática |
+| Workflows de CI activos | 4 (backend, frontend, E2E y métricas semanales) | GitHub Actions | Cada cambio se verifica automáticamente en tres frentes |
+| Issues gestionados | Más de 100, con etiquetas por área y cierre con evidencia | GitHub Issues | La trazabilidad tarea-código-prueba se mantiene en la misma plataforma |
+| Requisitos del plan de pruebas ejecutados | 19 de 20 (el restante, BET-03, es una exclusión documentada) | plan-de-pruebas.md | El plan definido en mayo se completó |
+
+- **C.4** `<INSERTAR IMAGEN: dashboard de métricas generado por scripts/generate_metrics_dashboard.py>`
+
+### Anexo D. Evidencias de gestión y versionamiento
+
+- **D.1** `<INSERTAR IMAGEN: tablero de GitHub Projects con las columnas Backlog, In progress y Done>`
+- **D.2** `<INSERTAR IMAGEN: lista de issues con sus etiquetas, mostrando cerrados y abiertos>`
+- **D.3** `<INSERTAR IMAGEN: historial de commits de la rama master>`
+- **D.4** `<INSERTAR IMAGEN: Pull Requests #99, #100 y #101 con sus verificaciones en verde>`
+- **D.5** `<INSERTAR IMAGEN: pestaña Actions con los workflows backend-ci, frontend-ci, e2e-tests y metrics-report>`
+
+### Anexo E. Código relevante
+
+Fragmentos citados en el documento, ubicados en el repositorio:
+
+| Referencia | Archivo | Contenido |
+|------------|---------|-----------|
+| E.1 | `backend/app/services/riesgo_service.py` | Fórmula ponderada de riesgo y clasificación por nivel |
+| E.2 | `backend/app/api/v1/endpoints/clientes.py` | Regla PEP y creación automática del expediente |
+| E.3 | `backend/app/core/security.py` | Control de acceso por roles y emisión de tokens |
+| E.4 | `backend/app/models/models.py` | Eventos de inmutabilidad de la auditoría (final del archivo) |
+| E.5 | `backend/app/services/pdf_service.py` | Generación del PDF del expediente |
+| E.6 | `frontend/src/services/api.ts` | Interceptor de renovación automática del token |
+| E.7 | `backend/scripts/seed_demo.py` | Datos de demostración reproducibles |
+
+---
+
+*Documento final del Proyecto Semestral. Ingeniería de Software IV, Universidad Tecnológica de Panamá.*

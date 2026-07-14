@@ -1,128 +1,116 @@
 # Sistema de Diligencia Debida Reforzada (EDD)
 
-Aplicacion web para cumplimiento AML/CFT en Panama segun Ley 23/2015, Ley 254/2021 y resolucion SBP-RG-PSO-R-2025-00671.
+**Universidad Tecnológica de Panamá**
+Materia: Ingeniería de Software IV | Profesora: María Mosquera | Salón: 1GS242
 
-## Stack Tecnologico
+**Integrantes:** César Santiago, Jean Suárez, Roberto López
 
-- **Backend**: FastAPI (Python 3.11+)
-- **Frontend**: React 18+ / Vue 3+ (pendiente implementar)
-- **Base de Datos**: PostgreSQL 15+
-- **Cache/Workers**: Redis + Celery
-- **Contenedores**: Docker + Docker Compose
+Aplicación web de cumplimiento AML/CFT para Panamá, basada en la Ley 23 de 2015, la Ley 254 de 2021 y la Resolución SBP-RG-PSO-R-2025-00671. Permite registrar clientes, calcular su nivel de riesgo, detectar Personas Expuestas Políticamente (PEP) con datos oficiales de datosabiertos.gob.pa y gestionar expedientes con trazabilidad completa.
 
-## Funcionalidades Principales
+---
 
-- [x] Formulario EDD con 7 modulos
-- [x] Calculo de nivel de riesgo (formula ponderada)
-- [x] Busqueda fuzzy de PEPs en datosabiertos.gob.pa
-- [x] Upload de documentos con hash SHA-256
-- [x] Dashboard de expedientes
-- [x] Trazabilidad/auditoria de eventos
-- [x] Flujo de aprobacion con niveles
+## Cómo montar y ejecutar el proyecto (paso a paso)
 
-## Requisitos
+Solo necesitas tener **Docker Desktop** instalado y abierto.
 
-- Python 3.11+
-- PostgreSQL 15+
-- Redis 7+
-- Node.js 18+ (para frontend)
-- Docker y Docker Compose (opcional)
-
-## Instalacion Local (Desarrollo)
-
-### 1. Clonar y configurar
+**1. Clonar el repositorio**
 
 ```bash
-# Clonar repositorio
-cd proyecto_diligencia_reforzada
-
-# Backend
-cd backend
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# venv\Scripts\activate  # Windows
-pip install -r requirements.txt
-cp .env.example .env
-# Editar .env con tu configuracion
+git clone https://github.com/aaacmsg/debida-diligencia-reforzada.git
+cd debida-diligencia-reforzada
 ```
 
-### 2. Base de datos
+**2. Levantar todo el sistema**
 
 ```bash
-# Crear base de datos
-createdb diligencia_db
-
-# Ejecutar migraciones (si usa alembic)
-alembic upgrade head
+docker-compose up --build
 ```
 
-### 3. Ejecutar
+La primera vez tarda unos minutos porque descarga las imágenes y construye el proyecto. Están listos cuando la consola deja de moverse y se ve el mensaje de Uvicorn corriendo.
+
+**3. Cargar los datos de demostración** (en otra terminal)
 
 ```bash
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+docker-compose exec backend python scripts/seed_demo.py
 ```
 
-### 4. Frontend (pendiente)
+Esto crea 8 clientes de ejemplo (incluye un ministro PEP), expedientes con riesgo bajo, medio y alto, alertas, documentos y los usuarios de prueba.
+
+**4. Entrar a la aplicación**
+
+| Qué | Dónde |
+|-----|-------|
+| Aplicación web | http://localhost:3000 |
+| API (Swagger) | http://localhost:8000/docs |
+
+**Usuarios de prueba:**
+
+| Usuario | Contraseña | Rol |
+|---------|------------|-----|
+| `admin` | `admin123` | Administrador (todo permitido) |
+| `oficial` | `oficial123` | Oficial de Cumplimiento (revisa expedientes, consulta auditoría) |
+| `gerencia` | `gerencia123` | Alta Gerencia (aprueba o rechaza expedientes de alto riesgo) |
+
+**Para apagar todo:** `docker-compose down` (agrega `-v` si quieres borrar la base de datos y empezar de cero).
+
+---
+
+## Cómo usar la aplicación
+
+1. **Inicia sesión** con alguno de los usuarios de prueba.
+2. **Dashboard**: resumen de expedientes por estado y por nivel de riesgo.
+3. **Clientes**: botón "Nuevo Cliente" abre el formulario EDD por módulos. Si marcas la casilla PEP aparecen campos adicionales obligatorios. Al guardar, el sistema calcula el riesgo y crea el expediente automáticamente.
+4. **Expedientes**: lista con filtros por estado y riesgo. Al entrar a uno hay tres pestañas (Detalle, Documentos, Trazabilidad), el botón **Exportar PDF** y, si está pendiente de gerencia y entraste como `gerencia`, los botones Aprobar y Rechazar (piden comentario obligatorio).
+5. **Buscar PEP**: escribe un nombre o cédula (prueba con `8-702-3355`) y el sistema busca coincidencias en la base de funcionarios públicos.
+6. **Grafo de Relaciones**: mapa visual de clientes, beneficiarios finales y documentos. Los nodos naranjas son PEP. Se puede hacer zoom y arrastrar nodos.
+7. **Reportes**: registro de auditoría del sistema y exportación a CSV.
+8. La **campana** de la esquina superior muestra las alertas activas.
+
+---
+
+## Funcionalidades principales
+
+- Formulario EDD de 7 módulos con validación en tiempo real (Ley 23, Art. 15-18).
+- Cálculo de riesgo con fórmula ponderada: País 25% + Cargo PEP 30% + Sector 15% + Vínculos 20% + Origen de fondos 10%. Niveles: bajo (0-35), medio (36-65), alto (66-100).
+- Regla PEP: todo cliente PEP queda en riesgo alto y requiere aprobación de Alta Gerencia, sin importar el score.
+- Búsqueda difusa de PEP (RapidFuzz, umbral 85%) contra datos de datosabiertos.gob.pa.
+- Beneficiarios finales con porcentaje de participación y grafo de relaciones societarias.
+- Carga de documentos (PDF/PNG/JPG, máx. 10 MB) con hash SHA-256.
+- Exportación del expediente a PDF con todas sus secciones.
+- Flujo de aprobación con comentario obligatorio y control de acceso por roles (RBAC).
+- Auditoría inmutable (WORM): los eventos no se pueden modificar ni borrar.
+- Tokens JWT con refresh automático y límite de intentos de login por IP.
+
+## Pruebas
 
 ```bash
-cd frontend
-npm install
-npm run dev
+# Backend: 91 pruebas (unitarias + integración)
+docker-compose exec backend python -m pytest
+
+# Frontend: 25 pruebas end-to-end con Playwright (requiere el sistema corriendo)
+cd frontend && npm install && npx playwright test
 ```
 
-## Instalacion con Docker
+Ambas suites corren automáticamente en GitHub Actions en cada Pull Request.
 
-```bash
-docker-compose up -d
-```
-
-## Endpoints API
-
-| Metodo | Endpoint | Descripcion |
-|--------|----------|-------------|
-| POST | /api/v1/auth/login | Login (OAuth2 Password) |
-| POST | /api/v1/auth/register | Registrar usuario |
-| GET | /api/v1/clientes | Listar clientes |
-| POST | /api/v1/clientes | Crear cliente |
-| GET | /api/v1/expedientes | Listar expedientes |
-| POST | /api/v1/expedientes | Crear expediente |
-| POST | /api/v1/riesgos/calcular | Calcular riesgo |
-| POST | /api/v1/pep/buscar | Buscar PEP en funcionarios |
-| POST | /api/v1/documentos/{id}/upload | Subir documento |
-
-## Documentacion API
-
-- Swagger UI: http://localhost:8000/docs
-- ReDoc: http://localhost:8000/redoc
-
-## Estructura del Proyecto
+## Estructura del proyecto
 
 ```
-proyecto_diligencia_reforzada/
-├── backend/
-│   ├── app/
-│   │   ├── api/v1/endpoints/   # Endpoints API
-│   │   ├── core/                # Config, security, database
-│   │   ├── models/              # Modelos SQLAlchemy
-│   │   ├── schemas/             # Schemas Pydantic
-│   │   ├── services/            # Logica de negocio
-│   │   └── main.py              # FastAPI app
-│   ├── tests/
-│   ├── requirements.txt
-│   └── Dockerfile
-├── frontend/                    # (pendiente implementar)
-│   ├── src/
-│   ├── package.json
-│   └── Dockerfile
-├── docker-compose.yml
-├── .env.example
-└── README.md
+├── backend/            # API FastAPI (Python 3.11)
+│   ├── app/            # endpoints, modelos, servicios, seguridad
+│   ├── tests/          # 91 pruebas pytest
+│   └── scripts/        # seed de demo y dashboard de métricas
+├── frontend/           # React 18 + TypeScript + Vite
+│   ├── src/            # páginas, servicios, stores
+│   └── tests/          # 25 pruebas E2E Playwright
+├── docs/               # documento final, contexto y bitácora
+├── docker-compose.yml  # backend + frontend + PostgreSQL + Redis
+└── PRD.md              # requisitos completos del sistema
 ```
 
-## Variables de Entorno Requeridas
+## Enlaces del proyecto
 
-Ver `.env.example` para todas las variables.
-
-## Licencia
-
-Proprietario - Solo para uso interno
+- Issues: https://github.com/aaacmsg/debida-diligencia-reforzada/issues
+- Tablero: https://github.com/users/aaacmsg/projects/2
+- Documento final: [`docs/documento-final.md`](docs/documento-final.md)
+- Arquitectura: [`architecture.md`](architecture.md)
