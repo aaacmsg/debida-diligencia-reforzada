@@ -64,4 +64,6 @@ def create_default_admin():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    # La app corre en Docker y debe escuchar en todas las interfaces del
+    # contenedor; el puerto expuesto hacia el host lo controla compose.
+    uvicorn.run(app, host="0.0.0.0", port=8000)  # nosec B104
